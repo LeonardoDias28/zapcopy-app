@@ -4,7 +4,7 @@ import unicodedata
 import re
 
 # ==============================================================================
-# 🔒 ZONA INTOCÁVEL (LÓGICA DO PIX E LIMPEZA) - NÃO ALTERADO
+# 🔒 ZONA INTOCÁVEL (LÓGICA DO PIX E LIMPEZA) - IDÊNTICO AO ANTERIOR
 # ==============================================================================
 
 def limpar_texto(texto):
@@ -57,7 +57,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE E FUNCIONALIDADES (RECUPERADAS DA VERSÃO COMPLETA)
+# 🎨 INTERFACE
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="🚀", layout="centered")
@@ -66,7 +66,7 @@ st.title("🚀 ZapCopy Pro")
 st.markdown("##### Automação de Vendas e Cobrança com Pix")
 st.divider()
 
-# --- SIDEBAR (CONFIGURAÇÕES GERAIS) ---
+# --- SIDEBAR ---
 with st.sidebar:
     st.header("⚙️ Configurar Pix")
     st.caption("Dados obrigatórios para o código funcionar.")
@@ -80,7 +80,6 @@ with st.sidebar:
 
 # --- ÁREA PRINCIPAL ---
 with st.container(border=True):
-    # BLOCO 1: QUEM É O CLIENTE (VOLTOU!)
     st.subheader("👤 Quem é o Cliente?")
     col_cli1, col_cli2 = st.columns(2)
     with col_cli1:
@@ -88,9 +87,8 @@ with st.container(border=True):
     with col_cli2:
         celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999999999")
     
-    st.write("") # Espaço visual
+    st.write("")
 
-    # BLOCO 2: O QUE VOCÊ QUER FAZER? (ABAS RESTAURADAS)
     st.subheader("💬 Gerador de Mensagens")
     tab1, tab2, tab3, tab4 = st.tabs(["💸 Cobrar", "🛒 Vender", "📅 Agendar", "⭐ Feedback"])
     
@@ -104,26 +102,22 @@ with st.container(border=True):
         valor_cobranca = st.text_input("Valor (R$)", value="100,00")
         
         if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
-            # Lógica de Tom de Voz para Cobrança
             if cenario_cobranca == "Enviar Pix (Padrão)":
                 if tom_voz == "Profissional 👔":
                     intro = f"Prezado(a) {nome_cliente}, segue os dados bancários para a quitação do valor de R$ {valor_cobranca}."
                 else:
                     intro = f"Oi {nome_cliente}, tudo bem? Segue o Pix referente ao valor de R$ {valor_cobranca} conforme combinamos."
-            
             elif cenario_cobranca == "Lembrete de Vencimento":
                 if tom_voz == "Profissional 👔":
                     intro = f"Olá {nome_cliente}. Lembramos que o vencimento da fatura de R$ {valor_cobranca} é hoje."
                 else:
                     intro = f"Opa {nome_cliente}! Passando pra lembrar que seu boleto de R$ {valor_cobranca} vence hoje, ok?"
-            
-            else: # Atrasada
+            else: 
                 if tom_voz == "Amigável 😊":
                     intro = f"Oi {nome_cliente}, acho que você esqueceu da gente rs. Não vi o pagamento de R$ {valor_cobranca}. Conseguimos resolver hoje?"
                 else:
                     intro = f"{nome_cliente}, não identificamos o pagamento de R$ {valor_cobranca}. Precisamos regularizar para evitar pendências."
 
-            # Geração do Pix (Se houver dados)
             if meu_pix and meu_nome:
                 pix_gerado = gerar_pix_payload(meu_pix, meu_nome, minha_cidade, valor_cobranca)
                 msg_pix_aviso = "\n\n👇 Segue o código 'Copia e Cola' na mensagem abaixo:"
@@ -163,42 +157,50 @@ with st.container(border=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
 # ==============================================================================
-# 📤 ZONA DE SAÍDA (BOTÕES SEPARADOS E WHATSAPP)
+# 📤 ZONA DE SAÍDA (CORREÇÃO DO LINK FEITA AQUI)
 # ==============================================================================
 
 if script_final:
     st.divider()
     st.success("✅ Mensagem Pronta!")
     
-    # Prévia
     with st.expander("👀 Ver texto da mensagem"):
         st.write(script_final)
 
-    # Tratamento do Link do WhatsApp
-    link_texto = ""
-    link_pix_code = ""
-    
+    # --- CORREÇÃO DO LINK WHATSAPP ---
     msg_texto_encoded = quote(script_final)
     
-    # Define o destino (número ou genérico)
+    # Variáveis vazias para iniciar
+    link_texto = ""
+    link_pix_code = ""
+    label_btn = ""
+
     if celular_cliente:
+        # Se tem número: usa ?phone=X&text=Y (usa o &)
         nums = "".join(filter(str.isdigit, celular_cliente))
         if not nums.startswith("55"): nums = "55" + nums
+        
         base_url = f"https://api.whatsapp.com/send?phone={nums}"
+        link_texto = f"{base_url}&text={msg_texto_encoded}" # AQUI ESTAVA O ERRO, AGORA É &
+        
+        if pix_gerado:
+             msg_pix_encoded = quote(pix_gerado)
+             link_pix_code = f"{base_url}&text={msg_pix_encoded}" # AQUI TAMBÉM
+             
         label_btn = f"Enviar para {nome_cliente}"
+    
     else:
+        # Se NÃO tem número: usa ?text=Y (usa o ?)
         base_url = "https://api.whatsapp.com/send"
+        link_texto = f"{base_url}?text={msg_texto_encoded}"
+        
+        if pix_gerado:
+             msg_pix_encoded = quote(pix_gerado)
+             link_pix_code = f"{base_url}?text={msg_pix_encoded}"
+             
         label_btn = "Abrir WhatsApp"
 
-    # Link 1: Texto Principal
-    link_texto = f"{base_url}?text={msg_texto_encoded}"
-
-    # Link 2: Apenas o Código Pix (se foi gerado)
-    if pix_gerado:
-        msg_pix_encoded = quote(pix_gerado)
-        link_pix_code = f"{base_url}?text={msg_pix_encoded}"
-
-    # --- RENDERIZAÇÃO DOS BOTÕES ---
+    # --- BOTÕES ---
     col_btn1, col_btn2 = st.columns(2)
     
     with col_btn1:
@@ -213,13 +215,9 @@ if script_final:
             st.markdown("**Passo 2: (Sem Pix)**")
             st.info("Nenhum Pix gerado nesta mensagem.")
 
-    # Visualização do QR Code para Teste
+    # QR Code Teste
     if pix_gerado:
         st.markdown("---")
         with st.expander("📱 Testar QR Code (Para você)"):
             qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_gerado)}"
-            col_qr, col_txt = st.columns([1,3])
-            with col_qr:
-                st.image(qr_url, width=120)
-            with col_txt:
-                st.caption("Aponte o app do seu banco aqui para testar se o valor e os dados batem.")
+            st.image(qr_url, width=120, caption="Aponte o app do banco aqui")
