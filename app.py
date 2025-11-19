@@ -1,124 +1,173 @@
 import streamlit as st
 from urllib.parse import quote
 
-# 1. Configuração da Página
-st.set_page_config(
-    page_title="ZapCopy Pro",
-    page_icon="🚀",
-    layout="centered"
-)
+# --- FUNÇÃO GERADORA DE PIX (Payload CRC16) ---
+# Esta função cria o código "Copia e Cola" padrão Banco Central sem precisar de bibliotecas extras
+def gerar_payload_pix(chave, nome, cidade, valor):
+    nome = nome[0:25].upper().ljust(25) # Limite 25 chars
+    cidade = cidade[0:15].upper().ljust(15) # Limite 15 chars
+    valor_str = "{:.2f}".format(float(valor.replace(",", ".")))
+    
+    payload = f"00020126330014BR.GOV.BCB.PIX0114{chave}520400005303986540{len(valor_str)}{valor_str}5802BR59{len(nome)}{nome}60{len(cidade)}{cidade}62070503***6304"
+    
+    # Cálculo do CRC16
+    polinomio = 0x1021
+    resultado = 0xFFFF
+    if type(payload) is str:
+        payload = payload.encode()
+    for byte in payload:
+        resultado ^= (byte << 8)
+        for _ in range(8):
+            if (resultado & 0x8000):
+                resultado = (resultado << 1) ^ polinomio
+            else:
+                resultado = resultado << 1
+        resultado &= 0xFFFF
+    
+    crc16 = "{:04X}".format(resultado)
+    return f"{payload.decode()}{crc16}"
 
-# Estilo CSS para dar uma cara mais profissional
+# --- CONFIGURAÇÃO VISUAL ---
+st.set_page_config(page_title="ZapCopy Ultimate", page_icon="💎", layout="wide")
+
+# CSS Customizado para visual "App Nativo"
 st.markdown("""
 <style>
+    .stApp {background-color: #0E1117;}
+    .main-card {background-color: #262730; padding: 20px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
+    h1 {color: #00CC66;}
     .stButton button {
-        width: 100%;
+        background-color: #25D366 !important;
+        color: white !important;
         font-weight: bold;
+        border-radius: 10px;
+        height: 50px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    .stButton button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# 2. Cabeçalho
-st.title("🚀 ZapCopy Pro")
-st.markdown("### Transforme conversas em dinheiro no WhatsApp")
-st.markdown("---")
-
-# 3. Barra Lateral (Dados Globais)
+# --- BARRA LATERAL (DADOS DO USUÁRIO) ---
 with st.sidebar:
-    st.header("👤 Dados do Cliente")
-    nome_cliente = st.text_input("Nome do Cliente", value="Fulano")
+    st.title("⚙️ Configurações")
+    st.markdown("Preencha seus dados para gerar o Pix corretamente.")
     
-    st.header("🎨 Personalização")
-    tom_voz = st.radio(
-        "Tom da mensagem:",
-        ["Amigável 😇", "Profissional 👔", "Persuasivo 🔥"]
-    )
+    meu_pix = st.text_input("Sua Chave Pix (CPF/Email)", placeholder="Ex: seu@email.com")
+    meu_nome = st.text_input("Seu Nome Completo", placeholder="Nome do Beneficiário Pix")
+    minha_cidade = st.text_input("Sua Cidade", value="Sao Paulo")
     
-    st.info("👇 Selecione a categoria nas abas acima do gerador.")
+    st.divider()
+    st.info("💡 Dica: Preencha tudo para o QR Code funcionar!")
 
-# 4. Organização por Abas (Melhoria Visual)
-aba1, aba2, aba3 = st.tabs(["💸 Cobrança", "💰 Vendas", "⭐ Pós-Venda"])
+# --- ÁREA PRINCIPAL ---
+col_esq, col_dir = st.columns([1, 1.5])
 
-# Variável para guardar o script final
-script_gerado = ""
+with col_esq:
+    st.markdown("## 👤 Cliente")
+    with st.container(border=True):
+        nome_cliente = st.text_input("Nome do Cliente", value="Fulano")
+        celular_cliente = st.text_input("WhatsApp (DDD + Número)", placeholder="Ex: 11999999999")
+        tom_voz = st.select_slider("Tom da Mensagem", options=["😌 Sutil", "👔 Profissional", "🔥 Persuasivo"])
 
-# --- LÓGICA DA ABA COBRANÇA ---
-with aba1:
-    st.subheader("Recuperação de Valores")
-    tipo_cobranca = st.selectbox(
-        "Situação:",
-        ["Lembrete de Vencimento", "Atraso (Primeiro Aviso)", "Atraso Crítico"]
-    )
-    valor = st.text_input("Valor em aberto (R$)", value="150,00")
-    link_pix = st.text_input("Chave Pix (Opcional)", placeholder="Ex: CNPJ ou Email")
-
-    if st.button("Gerar Cobrança"):
-        if tipo_cobranca == "Lembrete de Vencimento":
-            if tom_voz == "Profissional 👔":
-                script_gerado = f"Olá, {nome_cliente}. Tudo bem?\nGostaria de lembrar que o vencimento da fatura de {valor} é hoje.\nCaso precise do boleto atualizado, estou à disposição."
-            else: # Amigável ou Persuasivo
-                script_gerado = f"Oi {nome_cliente}, tudo bom? 👋\nPassando só pra te lembrar que seu boleto de {valor} vence hoje.\nQualquer dúvida me chama!"
+with col_dir:
+    st.markdown("## 💬 Gerador de Script")
+    
+    # Abas de Categorias
+    tab1, tab2, tab3, tab4 = st.tabs(["💸 Cobrança", "🛒 Vendas", "📅 Agendamento", "⭐ Feedback"])
+    
+    script_final = ""
+    pix_copia_cola = ""
+    
+    # --- ABA COBRANÇA ---
+    with tab1:
+        situacao = st.selectbox("Situação:", ["Lembrete Antes do Vencimento", "Boleto Vencido (Leve)", "Cobrança Incisiva + Pix"])
+        valor_cobranca = st.text_input("Valor (R$)", value="100,00")
         
-        elif tipo_cobranca == "Atraso (Primeiro Aviso)":
-            pix_txt = f"Se facilitar, segue nosso Pix: {link_pix}" if link_pix else ""
-            if tom_voz == "Profissional 👔":
-                script_gerado = f"Prezado(a) {nome_cliente}.\nNão identificamos o pagamento de {valor} em nosso sistema.\nHouve algum imprevisto?\n{pix_txt}\nFicamos no aguardo."
+        if st.button("Gerar Cobrança", key="btn_cob"):
+            if situacao == "Lembrete Antes do Vencimento":
+                script_final = f"Oi {nome_cliente}, tudo bem? 👋\nPassando pra lembrar que seu boleto de R$ {valor_cobranca} vence amanhã.\nJá quer deixar agendado?"
+            
+            elif situacao == "Boleto Vencido (Leve)":
+                script_final = f"Olá {nome_cliente}! \nNão identificamos o pagamento de R$ {valor_cobranca}.\nAconteceu algo? Posso atualizar a data pra você?"
+            
+            elif situacao == "Cobrança Incisiva + Pix":
+                if meu_pix and meu_nome:
+                    pix_copia_cola = gerar_payload_pix(meu_pix, meu_nome, minha_cidade, valor_cobranca)
+                    script_final = f"Oi {nome_cliente}.\nPrecisamos regularizar a pendência de R$ {valor_cobranca}.\nPara facilitar, segue o Pix Copia e Cola abaixo (é só copiar e pagar no app do banco):\n\n{pix_copia_cola}\n\nAguardo o comprovante."
+                else:
+                    st.error("⚠️ Preencha sua Chave Pix na barra lateral para gerar o código!")
+
+    # --- ABA VENDAS ---
+    with tab2:
+        oferta = st.selectbox("Tipo:", ["Promoção Relâmpago", "Recuperação de Carrinho", "Upsell (Oferecer mais)"])
+        produto = st.text_input("Produto", value="Mentoria")
+        
+        if st.button("Gerar Venda", key="btn_venda"):
+            if oferta == "Promoção Relâmpago":
+                script_final = f"😱 {nome_cliente}, você viu isso?\nLiberamos 3 vagas extras para a {produto} com desconto.\nDeu a louca no chefe! Quer o link?"
+            elif oferta == "Recuperação de Carrinho":
+                script_final = f"Ei {nome_cliente}, vi que você quase levou a {produto}!\nFicou alguma dúvida? Posso te dar um bônus pra fechar agora?"
             else:
-                script_gerado = f"Opa {nome_cliente}, tudo certo? 🤔\nAcho que você esqueceu da gente rs. Não vi o pagamento de {valor} cair aqui.\n{pix_txt}\nConsegue ver isso pra mim hoje?"
+                script_final = f"{nome_cliente}, quem leva {produto} geralmente adora esse complemento aqui...\nFaz total sentido pra você. Posso te mostrar?"
+
+    # --- ABA AGENDAMENTO ---
+    with tab3:
+        acao = st.radio("Ação:", ["Confirmar Horário", "Reagendar", "Lembrete 1h antes"])
+        horario = st.time_input("Horário", value=None)
         
-        else: # Atraso Crítico
-             script_gerado = f"Olá {nome_cliente}.\nPrecisamos regularizar a pendência de {valor} para evitar bloqueios ou juros.\nPodemos negociar? Aguardo seu retorno urgente."
-
-# --- LÓGICA DA ABA VENDAS ---
-with aba2:
-    st.subheader("Aumentar Conversão")
-    tipo_venda = st.selectbox(
-        "Objetivo:",
-        ["Oferta Irresistível", "Recuperar Carrinho", "Pedir Indicação"]
-    )
-    produto = st.text_input("Nome do Produto", value="Kit Premium")
-    bonus = st.text_input("Bônus ou Desconto (Opcional)", placeholder="Ex: Frete Grátis")
-
-    if st.button("Gerar Venda"):
-        if tipo_venda == "Oferta Irresistível":
-            oferta_extra = f"E ainda tem {bonus} se fechar agora!" if bonus else ""
-            if tom_voz == "Persuasivo 🔥":
-                script_gerado = f"⚠️ Atenção {nome_cliente}!\nÚltimas unidades do {produto} saindo agora.\nVocê não vai perder essa oportunidade né?\n{oferta_extra}\nDigita QUERO pra garantir o seu."
+        if st.button("Gerar Agendamento", key="btn_agenda"):
+            hora_str = str(horario)[0:5] if horario else "combinado"
+            if acao == "Confirmar Horário":
+                script_final = f"Opa {nome_cliente}! Tudo confirmado para às {hora_str}?\nEstou separando seu material aqui. 👍"
+            elif acao == "Reagendar":
+                script_final = f"Oi {nome_cliente}, tive um imprevisto e vou precisar ajustar nosso horário das {hora_str}.\nVocê tem disponibilidade mais tarde?"
             else:
-                script_gerado = f"Oi {nome_cliente}! 😍\nChegou reposição do {produto} que você queria.\n{oferta_extra}\nVamos separar um pra você?"
-        
-        elif tipo_venda == "Recuperar Carrinho":
-             script_gerado = f"Ei {nome_cliente}, vi que você quase levou o {produto}!\nFicou com alguma dúvida? Posso te ajudar a finalizar?\nMe diz o que faltou pra gente fechar negócio."
-        
-        else: # Indicação
-            script_gerado = f"{nome_cliente}, fico muito feliz que tenha gostado do {produto}!\nSe você indicar um amigo, os dois ganham um presente especial na próxima compra 🎁. O que acha?"
+                script_final = f"⏰ Lembrete: Nosso encontro é daqui a pouco, às {hora_str}.\nO endereço você já tem, né? Até já!"
 
-# --- LÓGICA DA ABA PÓS-VENDA ---
-with aba3:
-    st.subheader("Fidelização")
-    tipo_suporte = st.selectbox("Ação:", ["Boas-vindas", "Pesquisa de Satisfação"])
+    # --- ABA FEEDBACK ---
+    with tab4:
+        if st.button("Gerar Pedido de Feedback", key="btn_feed"):
+            script_final = f"{nome_cliente}, foi um prazer te atender!\n\nUma pergunta rápida: De 0 a 10, quanto você indicaria nosso serviço?\nSua opinião manda muito aqui! ⭐"
+
+# --- RESULTADO FINAL ---
+st.markdown("---")
+if script_final:
+    st.success("✅ Mensagem Pronta:")
     
-    if st.button("Gerar Mensagem"):
-        if tipo_suporte == "Boas-vindas":
-            script_gerado = f"Parabéns pela compra, {nome_cliente}! 🎉\nSeu pedido já está sendo preparado com muito carinho.\nAssim que sair para entrega, eu te aviso aqui!"
+    # Container do resultado
+    with st.container(border=True):
+        st.code(script_final, language=None)
+        
+        # SE TIVER PIX, MOSTRA O QR CODE
+        if pix_copia_cola:
+            st.markdown("### 📱 QR Code para Pagamento:")
+            # Usa API pública para gerar a imagem do QR Code baseada no payload
+            qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={quote(pix_copia_cola)}"
+            st.image(qr_url, caption="Mostre isso pro cliente escanear")
+            st.info("O código 'Copia e Cola' já está no texto da mensagem acima!")
+
+        # BOTÃO DO WHATSAPP INTELIGENTE
+        texto_encoded = quote(script_final)
+        
+        # Lógica: Se tem celular, link direto. Se não, link genérico.
+        if celular_cliente:
+            # Remove caracteres não numéricos
+            celular_limpo = "".join(filter(str.isdigit, celular_cliente))
+            link_zap = f"https://wa.me/55{celular_limpo}?text={texto_encoded}"
+            label_btn = f"Enviar para {nome_cliente} 📲"
         else:
-            script_gerado = f"Oi {nome_cliente}! \nDe 0 a 10, qual nota você daria para nosso atendimento hoje? ⭐\nSua opinião é muito importante pra gente melhorar!"
+            link_zap = f"https://wa.me/?text={texto_encoded}"
+            label_btn = "Abrir no WhatsApp (Escolher Contato) 📲"
 
-# 5. Exibição do Resultado e Botão WhatsApp (A MÁGICA)
-if script_gerado:
-    st.success("Script Gerado com Sucesso! 👇")
-    
-    # Área de texto para copiar manualmente se quiser
-    st.code(script_gerado, language=None)
-    
-    # Criação do Link do WhatsApp
-    texto_encoded = quote(script_gerado)
-    link_whatsapp = f"https://wa.me/?text={texto_encoded}"
-    
-    st.markdown(f"""
-    <a href="{link_whatsapp}" target="_blank">
-        <button style='background-color:#25D366; color:white; border:none; padding:10px 20px; border-radius:5px; font-size:16px; cursor:pointer; width:100%;'>
-            📲 <b>Enviar no WhatsApp Agora</b>
-        </button>
-    </a>
-    """, unsafe_allow_html=True)
+        st.markdown(f"""
+        <a href="{link_zap}" target="_blank" style="text-decoration:none;">
+            <button style="width:100%; background-color:#25D366; color:white; border:none; padding:15px; border-radius:10px; font-size:18px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                {label_btn}
+            </button>
+        </a>
+        """, unsafe_allow_html=True)
