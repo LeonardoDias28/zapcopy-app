@@ -2,6 +2,7 @@ import streamlit as st
 from urllib.parse import quote
 import unicodedata
 import re
+from datetime import date # Importação para lidar com datas
 
 # ==============================================================================
 # 🔒 ZONA INTOCÁVEL (LÓGICA DO PIX E LIMPEZA) - IDÊNTICO AO ANTERIOR
@@ -66,7 +67,7 @@ st.title("🚀 ZapCopy Pro")
 st.markdown("##### Automação de Vendas e Cobrança com Pix")
 st.divider()
 
-# --- SIDEBAR ---
+# --- SIDEBAR (CONFIGURAÇÕES GERAIS) ---
 with st.sidebar:
     st.header("⚙️ Configurar Pix")
     st.caption("Dados obrigatórios para o código funcionar.")
@@ -107,12 +108,14 @@ with st.container(border=True):
                     intro = f"Prezado(a) {nome_cliente}, segue os dados bancários para a quitação do valor de R$ {valor_cobranca}."
                 else:
                     intro = f"Oi {nome_cliente}, tudo bem? Segue o Pix referente ao valor de R$ {valor_cobranca} conforme combinamos."
+            
             elif cenario_cobranca == "Lembrete de Vencimento":
                 if tom_voz == "Profissional 👔":
                     intro = f"Olá {nome_cliente}. Lembramos que o vencimento da fatura de R$ {valor_cobranca} é hoje."
                 else:
                     intro = f"Opa {nome_cliente}! Passando pra lembrar que seu boleto de R$ {valor_cobranca} vence hoje, ok?"
-            else: 
+            
+            else: # Atrasada
                 if tom_voz == "Amigável 😊":
                     intro = f"Oi {nome_cliente}, acho que você esqueceu da gente rs. Não vi o pagamento de R$ {valor_cobranca}. Conseguimos resolver hoje?"
                 else:
@@ -143,13 +146,21 @@ with st.container(border=True):
 
     # === ABA 3: AGENDAMENTO ===
     with tab3:
+        # AQUI FOI ADICIONADO O CAMPO DE DATA
+        data_agendamento = st.date_input("Dia do Agendamento (Opcional)", value=None)
         horario = st.time_input("Horário do Agendamento", value=None)
+        
         if st.button("✨ Confirmar Agenda", type="primary", use_container_width=True):
-            hora_str = str(horario)[0:5]
+            data_str = ""
+            if data_agendamento:
+                data_str = f" no dia {data_agendamento.strftime('%d/%m')}" # Formata para DD/MM
+            
+            hora_str = str(horario)[0:5] if horario else "horário combinado"
+            
             if tom_voz == "Profissional 👔":
-                script_final = f"Olá {nome_cliente}. Confirmamos seu agendamento para às {hora_str}. Solicitamos pontualidade. Obrigado."
+                script_final = f"Olá {nome_cliente}. Confirmamos seu agendamento{data_str} para às {hora_str}. Solicitamos pontualidade. Obrigado."
             else:
-                script_final = f"Confirmadíssimo, {nome_cliente}! Te espero às {hora_str}. Até lá! 👊"
+                script_final = f"Confirmadíssimo, {nome_cliente}! Te espero{data_str} às {hora_str}. Até lá! 👊"
 
     # === ABA 4: FEEDBACK ===
     with tab4:
@@ -157,7 +168,7 @@ with st.container(border=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
 # ==============================================================================
-# 📤 ZONA DE SAÍDA (CORREÇÃO DO LINK FEITA AQUI)
+# 📤 ZONA DE SAÍDA
 # ==============================================================================
 
 if script_final:
@@ -167,30 +178,25 @@ if script_final:
     with st.expander("👀 Ver texto da mensagem"):
         st.write(script_final)
 
-    # --- CORREÇÃO DO LINK WHATSAPP ---
-    msg_texto_encoded = quote(script_final)
-    
-    # Variáveis vazias para iniciar
     link_texto = ""
     link_pix_code = ""
-    label_btn = ""
-
+    
+    msg_texto_encoded = quote(script_final)
+    
     if celular_cliente:
-        # Se tem número: usa ?phone=X&text=Y (usa o &)
         nums = "".join(filter(str.isdigit, celular_cliente))
         if not nums.startswith("55"): nums = "55" + nums
         
         base_url = f"https://api.whatsapp.com/send?phone={nums}"
-        link_texto = f"{base_url}&text={msg_texto_encoded}" # AQUI ESTAVA O ERRO, AGORA É &
+        link_texto = f"{base_url}&text={msg_texto_encoded}"
         
         if pix_gerado:
              msg_pix_encoded = quote(pix_gerado)
-             link_pix_code = f"{base_url}&text={msg_pix_encoded}" # AQUI TAMBÉM
+             link_pix_code = f"{base_url}&text={msg_pix_encoded}"
              
         label_btn = f"Enviar para {nome_cliente}"
     
     else:
-        # Se NÃO tem número: usa ?text=Y (usa o ?)
         base_url = "https://api.whatsapp.com/send"
         link_texto = f"{base_url}?text={msg_texto_encoded}"
         
@@ -200,7 +206,6 @@ if script_final:
              
         label_btn = "Abrir WhatsApp"
 
-    # --- BOTÕES ---
     col_btn1, col_btn2 = st.columns(2)
     
     with col_btn1:
@@ -215,9 +220,12 @@ if script_final:
             st.markdown("**Passo 2: (Sem Pix)**")
             st.info("Nenhum Pix gerado nesta mensagem.")
 
-    # QR Code Teste
     if pix_gerado:
         st.markdown("---")
         with st.expander("📱 Testar QR Code (Para você)"):
             qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_gerado)}"
-            st.image(qr_url, width=120, caption="Aponte o app do banco aqui")
+            col_qr, col_txt = st.columns([1,3])
+            with col_qr:
+                st.image(qr_url, width=120)
+            with col_txt:
+                st.caption("Aponte o app do seu banco aqui para testar se o valor e os dados batem.")
