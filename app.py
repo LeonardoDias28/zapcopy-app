@@ -1,141 +1,160 @@
 import streamlit as st
 from urllib.parse import quote
 import unicodedata
+import re
 
-# --- FUNÇÃO PARA REMOVER ACENTOS (CORREÇÃO DO ERRO 2056) ---
-def remover_acentos(texto):
+# --- 1. FUNÇÕES DE LIMPEZA E CRIPTOGRAFIA (BLINDADAS) ---
+
+def limpar_texto(texto):
+    """Remove acentos e caracteres especiais, deixando apenas letras e números básicos."""
     if not texto: return ""
-    # Normaliza para remover acentos (Ex: São Paulo -> Sao Paulo)
+    # Normaliza (remove acentos)
     nfkd = unicodedata.normalize('NFKD', texto)
-    texto_sem_acento = "".join([c for c in nfkd if not unicodedata.combining(c)])
-    # Remove caracteres especiais que não sejam letras/numeros/espaços
-    return texto_sem_acento.upper()
+    sem_acento = "".join([c for c in nfkd if not unicodedata.combining(c)])
+    # Mantém apenas letras, números e espaços, converte para maiúsculo
+    return re.sub(r'[^A-Z0-9 ]', '', sem_acento.upper()).strip()
 
-# --- FUNÇÃO GERAÇÃO PIX (AGORA BLINDADA) ---
-def gerar_payload_pix(chave, nome, cidade, valor):
-    # 1. Limpeza dos dados (Crucial para não dar erro no banco)
-    nome_tratado = remover_acentos(nome)[0:25].ljust(25) # Max 25 chars
-    cidade_tratada = remover_acentos(cidade)[0:15].ljust(15) # Max 15 chars
-    chave_tratada = remover_acentos(chave) # Remove acentos da chave tbm
-    
-    valor_str = "{:.2f}".format(float(valor.replace(",", ".")))
-    
-    # 2. Montagem do Payload
-    payload = f"00020126330014BR.GOV.BCB.PIX0114{chave_tratada}520400005303986540{len(valor_str)}{valor_str}5802BR59{len(nome_tratado)}{nome_tratado}60{len(cidade_tratada)}{cidade_tratada}62070503***6304"
-    
-    # 3. Cálculo CRC16
-    polinomio = 0x1021
-    resultado = 0xFFFF
-    if type(payload) is str:
-        payload = payload.encode()
-    for byte in payload:
-        resultado ^= (byte << 8)
+def formatar_valor(valor):
+    """Garante que o valor esteja no formato 100.00"""
+    try:
+        # Troca vírgula por ponto e converte para float
+        val_float = float(valor.replace("R$", "").replace(",", ".").strip())
+        return "{:.2f}".format(val_float)
+    except:
+        return "0.00"
+
+def crc16_ccitt(payload):
+    """Calcula o CRC16 padrão exigido pelo Banco Central."""
+    crc = 0xFFFF
+    polynomial = 0x1021
+    for byte in payload.encode('utf-8'):
+        crc ^= (byte << 8)
         for _ in range(8):
-            if (resultado & 0x8000):
-                resultado = (resultado << 1) ^ polinomio
+            if (crc & 0x8000):
+                crc = (crc << 1) ^ polynomial
             else:
-                resultado = resultado << 1
-        resultado &= 0xFFFF
-    crc16 = "{:04X}".format(resultado)
+                crc = (crc << 1)
+        crc &= 0xFFFF
+    return "{:04X}".format(crc)
+
+def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
+    # Limpezas de Segurança
+    chave_limpa = chave.strip() # Chave pix aceita caracteres, mas sem espaços nas pontas
+    nome_limpo = limpar_texto(nome)[:25] # Max 25 chars
+    cidade_limpa = limpar_texto(cidade)[:15] # Max 15 chars
+    valor_formatado = formatar_valor(valor)
     
-    return f"{payload.decode()}{crc16}"
+    # Montagem dos Campos (Padrão EMV QRCPS)
+    # 00 - Payload Format
+    # 26 - Merchant Account (GUI + Chave)
+    # 52 - MCC (0000 ou 6012)
+    # 53 - Moeda (986 = BRL)
+    # 54 - Valor
+    # 58 - País
+    # 59 - Nome
+    # 60 - Cidade
+    # 62 - Additional Data (TxID)
+    
+    p_chave = f"0014BR.GOV.BCB.PIX01{len(chave_limpa):02}{chave_limpa}"
+    
+    payload = (
+        f"000201"
+        f"26{len(p_chave):02}{p_chave}"
+        f"52040000"
+        f"5303986"
+        f"54{len(valor_formatado):02}{valor_formatado}"
+        f"5802BR"
+        f"59{len(nome_limpo):02}{nome_limpo}"
+        f"60{len(cidade_limpa):02}{cidade_limpa}"
+        f"62070503{txid}"
+        f"6304"
+    )
+    
+    crc = crc16_ccitt(payload)
+    return f"{payload}{crc}"
 
-# --- CONFIGURAÇÃO VISUAL ---
-st.set_page_config(page_title="ZapCopy Pro", page_icon="🚀", layout="centered")
+# --- 2. INTERFACE DO APLICATIVO ---
+st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
 
-st.title("🚀 ZapCopy Pro")
-st.markdown("##### O jeito certo de cobrar e vender no WhatsApp.")
+st.title("💸 ZapCopy Pro")
+st.markdown("##### Sistema de Cobrança Otimizado para WhatsApp")
 st.divider()
 
-# --- BARRA LATERAL ---
+# SIDEBAR
 with st.sidebar:
-    st.header("⚙️ Configuração Pix")
-    st.info("Seus dados para gerar o QR Code sem erros.")
-    meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Email ou Celular")
-    meu_nome = st.text_input("Seu Nome Completo", placeholder="Ex: Leonardo Dias")
-    minha_cidade = st.text_input("Sua Cidade", placeholder="Ex: Osasco")
+    st.header("⚙️ Configurar Pix")
+    st.warning("Preencha com atenção para evitar erros no Banco.")
+    
+    meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email")
+    meu_nome = st.text_input("Nome do Beneficiário", help="Nome que aparece no comprovante")
+    minha_cidade = st.text_input("Cidade", value="Sao Paulo")
 
-# --- ÁREA PRINCIPAL ---
+# MAIN APP
 with st.container(border=True):
-    st.subheader("👤 Cliente")
+    st.subheader("1. Dados da Cobrança")
     col1, col2 = st.columns(2)
     with col1:
-        nome_cliente = st.text_input("Nome", value="Fulano")
+        nome_cliente = st.text_input("Nome do Cliente", value="Cliente")
     with col2:
-        celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999998888")
+        valor = st.text_input("Valor (R$)", value="100,00")
     
-    st.write("") 
+    celular = st.text_input("WhatsApp do Cliente (Opcional)", placeholder="11999999999")
+
+    st.subheader("2. Gerar")
     
-    # ABAS
-    tab1, tab2 = st.tabs(["💸 Gerar Cobrança + Pix", "🛒 Gerar Venda"])
-    
-    script_final = ""
-    pix_copia_cola = ""
-
-    # --- ABA COBRANÇA ---
-    with tab1:
-        valor_cobranca = st.text_input("Valor a cobrar (R$)", value="100,00")
-        motivo = st.selectbox("Motivo:", ["Enviar Boleto/Pix", "Lembrete de Vencimento", "Cobrança Atrasada"])
-        
-        if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
-            # Verifica se tem dados do Pix preenchidos
-            if meu_pix and meu_nome and minha_cidade:
-                # Gera o Pix
-                pix_copia_cola = gerar_payload_pix(meu_pix, meu_nome, minha_cidade, valor_cobranca)
-                
-                # Monta o texto com separação visual clara
-                if motivo == "Enviar Boleto/Pix":
-                    msg_intro = f"Olá {nome_cliente}, tudo bem? Segue os dados para pagamento de R$ {valor_cobranca} conforme combinamos."
-                elif motivo == "Lembrete de Vencimento":
-                    msg_intro = f"Oi {nome_cliente}! Passando pra lembrar do vencimento de R$ {valor_cobranca} hoje."
-                else:
-                    msg_intro = f"Olá {nome_cliente}. Não identificamos o pagamento de R$ {valor_cobranca}. Podemos regularizar hoje?"
-
-                # AQUI ESTÁ O TRUQUE DA SEPARAÇÃO
-                script_final = f"""{msg_intro}
-
-Para facilitar, use a opção "Pix Copia e Cola" do seu banco com o código abaixo:
-
-👇 COPIE APENAS O CÓDIGO ABAIXO:
-{pix_copia_cola}"""
+    if st.button("✨ Criar Cobrança", type="primary", use_container_width=True):
+        if not meu_pix or not meu_nome:
+            st.error("❌ Erro: Preencha sua Chave Pix e Nome na barra lateral esquerda!")
+        else:
+            # Gera o Código
+            pix_code = gerar_pix_payload(meu_pix, meu_nome, minha_cidade, valor)
             
+            # Prepara os Links
+            msg_texto = f"Olá {nome_cliente}, tudo bem? 👋\n\nConforme combinado, segue o código Pix para pagamento no valor de R$ {valor}.\n\nVou te mandar o código 'Copia e Cola' na mensagem abaixo para facilitar 👇"
+            msg_texto_encoded = quote(msg_texto)
+            
+            msg_pix_encoded = quote(pix_code)
+            
+            # Tratamento do Número do Celular
+            link_zap_texto = ""
+            link_zap_pix = ""
+            
+            if celular:
+                nums = "".join(filter(str.isdigit, celular))
+                if not nums.startswith("55"): nums = "55" + nums
+                link_zap_texto = f"https://api.whatsapp.com/send?phone={nums}&text={msg_texto_encoded}"
+                link_zap_pix = f"https://api.whatsapp.com/send?phone={nums}&text={msg_pix_encoded}"
+                label_destino = f"para {nome_cliente}"
             else:
-                st.error("⚠️ Para gerar cobrança, preencha SEUS DADOS na barra lateral esquerda!")
+                link_zap_texto = f"https://api.whatsapp.com/send?text={msg_texto_encoded}"
+                link_zap_pix = f"https://api.whatsapp.com/send?text={msg_pix_encoded}"
+                label_destino = "no WhatsApp"
 
-    # --- ABA VENDAS ---
-    with tab2:
-        produto = st.text_input("Produto em oferta", value="Serviço Especial")
-        if st.button("✨ Gerar Oferta", type="primary", use_container_width=True):
-            script_final = f"Opa {nome_cliente}! \nSeparei uma condição exclusiva para o {produto}. \nQuer dar uma olhada sem compromisso?"
-
-# --- RESULTADO ---
-if script_final:
-    st.divider()
-    
-    # Visualização do QR Code (Apenas para o dono da loja ver)
-    if pix_copia_cola:
-        st.markdown("### 📱 QR Code (Teste com App do Banco)")
-        col_qr, col_aviso = st.columns([1, 2])
-        with col_qr:
-            qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_copia_cola)}"
-            st.image(qr_url, width=150)
-        with col_aviso:
-            st.warning("DICA: No WhatsApp, o cliente receberá o código em texto 'Copia e Cola', pois a imagem não pode ser enviada automaticamente.")
-    
-    st.markdown("### ✅ Mensagem Pronta:")
-    # Mostra o texto na tela
-    st.text_area("Prévia da mensagem:", value=script_final, height=250)
-
-    # BOTÃO WHATSAPP
-    texto_encoded = quote(script_final)
-    
-    if celular_cliente:
-        nums = "".join(filter(str.isdigit, celular_cliente))
-        if not nums.startswith("55"): nums = "55" + nums
-        link_zap = f"https://api.whatsapp.com/send?phone={nums}&text={texto_encoded}"
-        btn_label = f"Enviar para {nome_cliente} 📲"
-    else:
-        link_zap = f"https://api.whatsapp.com/send?text={texto_encoded}"
-        btn_label = "Abrir WhatsApp e Escolher Contato 📲"
-
-    st.link_button(btn_label, link_zap, type="primary", use_container_width=True)
+            # --- EXIBIÇÃO DOS RESULTADOS ---
+            st.divider()
+            st.success("✅ Cobrança Gerada com Sucesso!")
+            
+            # Mostra QR Code para teste
+            col_qr, col_info = st.columns([1,2])
+            with col_qr:
+                qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_code)}"
+                st.image(qr_url, caption="Teste com seu banco")
+            with col_info:
+                st.info("🚀 **Estratégia de Envio:**\nPara facilitar a vida do cliente, envie em dois passos:")
+            
+            st.markdown("---")
+            
+            # BOTÕES MÁGICOS LADO A LADO
+            c1, c2 = st.columns(2)
+            
+            with c1:
+                st.markdown(f"**Passo 1: A Mensagem**")
+                st.link_button(f"1️⃣ Enviar Texto {label_destino}", link_zap_texto, use_container_width=True)
+            
+            with c2:
+                st.markdown(f"**Passo 2: O Código**")
+                st.link_button(f"2️⃣ Enviar Pix Copia e Cola", link_zap_pix, type="primary", use_container_width=True)
+            
+            # Exibir o código na tela caso queira copiar manual
+            with st.expander("Ver código Pix gerado"):
+                st.code(pix_code, language=None)
