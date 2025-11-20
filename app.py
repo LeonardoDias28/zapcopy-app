@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - FIX ESTILO BOTÃO CONVERSA)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -101,8 +101,38 @@ st.markdown(f"""
         color: {TEXT_COLOR} !important;
     }}
 
-    /* ... (Demais estilos mantidos) ... */
+    /* 2. TITULO PRINCIPAL */
+    h1 {{
+        font-family: 'Montserrat', sans-serif;
+        font-size: 3.5em; 
+        font-weight: 800; 
+        color: {ACCENT_COLOR}; 
+        letter-spacing: 0.12em; 
+        text-align: center;
+        text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
+    }}
+
+    /* 3. ESTILO DOS TÍTULOS LATERAIS (HTML BYPASS) */
+    .neon-sidebar-header {{ 
+        font-size: 1.5em; 
+        font-weight: 800; 
+        color: {ACCENT_COLOR} !important;
+        letter-spacing: 0.1em;
+        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-family: 'Montserrat', sans-serif;
+    }}
     
+    /* 4. RESET GERAL PARA CAPTIONS NA SIDEBAR */
+    .stSidebar p, .stSidebar div[data-testid^="stTextContainer"] {{
+        color: {TEXT_COLOR} !important; 
+        font-weight: 400;
+        font-size: 1em;
+        text-shadow: none !important;
+    }}
+
+
     /* ESTILO DO CONTÊINER PRINCIPAL ÚNICO (Elegante)*/
     .stContainer {{
         background-color: {SECONDARY_BG_COLOR};
@@ -115,6 +145,18 @@ st.markdown(f"""
             0 0 15px rgba(0, 255, 192, 0.2);
         transition: box-shadow 0.3s ease-in-out;
     }}
+    .stContainer:hover {{
+        box-shadow: 
+            0 4px 8px rgba(0, 0, 0, 0.6), 
+            0 0 25px rgba(0, 255, 192, 0.4); 
+    }}
+    [data-testid="stVerticalBlock"] {{
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }}
+
 
     /* Sidebar Styles (MANTÉM O SECUNDÁRIO) */
     .stSidebar {{
@@ -122,8 +164,30 @@ st.markdown(f"""
         border-right: none; 
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.4); 
     }}
+
+    /* INPUTS DE TEXTO */
+    .stTextInput > div > div > input, .stSelectbox > div > div {{
+        background-color: #252530;
+        color: {TEXT_COLOR};
+        border: 1px solid #444;
+        border-radius: 8px;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+    }}
+    .stTextInput > div > div > input:focus {{
+        border-color: {ACCENT_COLOR};
+        box-shadow: 0 0 5px {ACCENT_COLOR}, inset 0 0 5px rgba(0,0,0,0.5);
+    }}
+
+    /* TABS */
+    .stTabs [aria-selected="true"] {{
+        color: {ACCENT_COLOR};
+        border-color: {ACCENT_COLOR};
+        background-color: {BG_COLOR}; 
+        box-shadow: 0 -2px 8px rgba(0, 255, 192, 0.3);
+        font-weight: 700 !important;
+    }}
     
-    /* BOTÃO PRIMÁRIO (PIX) */
+    /* BOTÃO PIX PRIMÁRIO (Passo 2) */
     .stButton > button {{
         background-color: #FF4B4B; /* Cor vermelha para destaque */
         color: #FFFFFF !important; 
@@ -133,21 +197,22 @@ st.markdown(f"""
         transition: all 0.3s ease;
     }}
     
-    /* BOTÃO SECUNDÁRIO (LIMPAR) */
-    .stButton:nth-child(3) > button {{ /* Limpar é o terceiro botão na linha */
+    /* BOTÃO LIMPAR SECUNDÁRIO (Ações) */
+    /* Miramos especificamente no botão de Limpar por posição na coluna 3 */
+    .stButton:nth-child(3) > button {{
         background-color: {ACCENT_COLOR} !important;
         color: {BG_COLOR} !important; 
         box-shadow: 0 0 10px {ACCENT_COLOR} !important; 
     }}
 
     /* *************************************************** */
-    /* NOVO FIX: ESTILO DO LINK BUTTON (Passo 1: Conversa) */
+    /* FIX ESTILO BOTÃO CONVERSA (Passo 1) - DEVE SER IGUAL AO LIMPAR */
     /* *************************************************** */
-    /* O Streamlit não dá uma classe fácil, então miramos no link-button secundário */
     [data-testid^="stLinkButton"] > a:first-child {{
         background-color: {SECONDARY_BG_COLOR} !important; /* Fundo escuro */
         color: {ACCENT_COLOR} !important; /* Texto neon */
         border: 1px solid {ACCENT_COLOR} !important; /* Borda neon */
+        border-radius: 8px !important; /* Arredondamento igual aos outros */
         box-shadow: 0 0 10px rgba(0, 255, 192, 0.5) !important;
         font-weight: 600;
     }}
@@ -159,6 +224,19 @@ st.markdown(f"""
     /* Corrigindo a cor do ícone SVG dentro do link (Conversa) */
     [data-testid^="stLinkButton"] > a:first-child svg {{
         fill: {ACCENT_COLOR} !important;
+    }}
+
+    /* Subtítulo */
+    .premium-subtitle-text {{
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.3em; 
+        font-weight: 600; 
+        color: {TEXT_COLOR}; 
+        letter-spacing: 0.08em; 
+        text-align: center;
+        margin-top: 0px !important; 
+        margin-bottom: 25px !important; 
+        text-shadow: 0 0 3px rgba(255,255,255,0.1); 
     }}
 
 </style>
@@ -309,7 +387,7 @@ with st.container(border=True):
             # Base com telefone
             base_link_sem_query = f"https://api.whatsapp.com/send?phone={nums}"
             
-            link_texto = f"{base_link_sem_query}&text={msg_texto_encoded}"
+            link_texto = f"{base_link_sem_query}&text={msg_texto_encoded}" # Inicia com &text
             label_btn = f"Enviar Conversa para {nome_cliente}"
             
             # Link PIX Puro (Com telefone, usa &text)
@@ -319,11 +397,11 @@ with st.container(border=True):
             # Base SEM telefone
             base_link_sem_query = f"https://api.whatsapp.com/send"
             
-            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}" 
+            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}" # Inicia com ?text
             label_btn = "Abrir WhatsApp com Conversa"
 
             # Link PIX Puro (Sem telefone, usa ?text)
-            link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}"
+            link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}" 
             
         label_pix_btn = "💲 Enviar Pix (Copia e Cola)"
         
@@ -332,20 +410,20 @@ with st.container(border=True):
         
         with col_btn1:
             st.markdown("**Passo 1: Conversa**")
-            # Usa st.link_button com type="secondary" (CSS ajustado para ele brilhar)
+            # Botão Conversa (Deve ser estilizado via CSS para o neon)
             st.link_button(f"💬 {label_btn}", link_texto, type="secondary", use_container_width=True)
         
         with col_btn2:
             st.markdown("**Passo 2: Pagamento**")
             if pix_gerado:
-                # Botão PIX usa type="primary" (CSS ajustado para ser vermelho)
+                # Botão PIX (Estilo Primário - Vermelho via CSS)
                 st.link_button(label_pix_btn, link_pix_code, type="primary", use_container_width=True)
             else:
                 st.info("Nenhum Pix gerado.")
 
         with col_btn3:
             st.markdown("**Ações**")
-            # Botão Limpar usa st.button com type="secondary" (CSS ajustado para ser neon)
+            # Botão Limpar (Estilo Secundário - Neon Green via CSS)
             if st.button("🗑️ Limpar Formulário", type="secondary", use_container_width=True):
                 st.rerun()
 
