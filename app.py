@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - RESTAURAÇÃO TOTAL DO BRILHO)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - RESTAURAÇÃO TOTAL DO BRILHO E PADRONIZAÇÃO DE BOTÕES)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -200,6 +200,7 @@ st.markdown(f"""
     }}
     
     /* BOTÃO LIMPAR SECUNDÁRIO (Ações) - NEON GREEN */
+    /* Miramos especificamente no botão de Limpar (st.button) */
     .stButton:nth-child(3) > button {{
         background-color: {ACCENT_COLOR} !important;
         color: {BG_COLOR} !important; 
@@ -409,20 +410,20 @@ with st.container(border=True):
         
         with col_btn1:
             st.markdown("**Passo 1: Conversa**")
-            # Botão Conversa (Estilo Secundário - Neon Green via CSS)
+            # Adicionado use_container_width=True
             st.link_button(f"💬 {label_btn}", link_texto, type="secondary", use_container_width=True)
         
         with col_btn2:
             st.markdown("**Passo 2: Pagamento**")
             if pix_gerado:
-                # Botão PIX (Estilo Primário - Vermelho via CSS)
+                # Adicionado use_container_width=True
                 st.link_button(label_pix_btn, link_pix_code, type="primary", use_container_width=True)
             else:
                 st.info("Nenhum Pix gerado.")
 
         with col_btn3:
             st.markdown("**Ações**")
-            # Botão Limpar (Estilo Secundário - Neon Green via CSS)
+            # Confirmado use_container_width=True
             if st.button("🗑️ Limpar Formulário", type="secondary", use_container_width=True):
                 st.rerun()
 
