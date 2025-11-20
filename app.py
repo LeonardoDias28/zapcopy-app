@@ -88,20 +88,22 @@ st.markdown(f"""
         text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
-    /* 3. ESTILO DOS TÍTULOS LATERAIS (FOCO APENAS EM H3/H4) */
+    /* 3. ESTILO DOS TÍTULOS LATERAIS (FORÇADO E FOCADO APENAS EM H3/H4) */
+    /* Este seletor deve pegar APENAS os headers de st.header */
     .stSidebar h3, .stSidebar h4 {{ 
         font-size: 1.5em; 
         font-weight: 800; 
-        color: {ACCENT_COLOR} !important; /* FORÇANDO COR NEON */
+        color: {ACCENT_COLOR} !important; /* FORÇA COR NEON */
         letter-spacing: 0.1em;
-        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; /* FORÇANDO GLOW */
+        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; /* FORÇA GLOW */
         margin-top: 15px;
         margin-bottom: 5px;
     }}
     
-    /* 4. RESET GERAL PARA LABELS E CAPTIONS NA SIDEBAR (EVITA QUE FIQUEM NEON GIGANTE) */
+    /* 4. RESET GERAL PARA LABELS E CAPTIONS NA SIDEBAR (GARANTE QUE FIQUEM CLAROS) */
+    /* Remove o estilo neon de onde não deve estar */
     .stSidebar label, .stSidebar p, .stSidebar div[data-testid^="stTextContainer"] {{
-        color: {TEXT_COLOR} !important; /* Garante que o texto de input/legenda seja branco e legível */
+        color: {TEXT_COLOR} !important; 
         font-weight: 400;
         font-size: 1em;
         text-shadow: none !important;
