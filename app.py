@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - CHEVRON FIX)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - CHEVRON FIX FINAL)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -75,10 +75,11 @@ st.markdown(f"""
     .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
-    /* FIX NO CHEVRON (SETA) DA SIDEBAR */
-    .stApp > header button svg {{
-        fill: {TEXT_COLOR} !important; /* Garante que a seta seja branca/clara */
-        opacity: 0.8;
+    /* FIX NO CHEVRON (SETA) DA SIDEBAR: FORÇA A COR NEON NO SVG */
+    .stApp header button svg {{
+        fill: {ACCENT_COLOR} !important; /* Força a cor Neon no ícone */
+        opacity: 1 !important;
+        filter: drop-shadow(0 0 5px {ACCENT_COLOR}); /* Adiciona um brilho sutil */
     }}
     
     /* 2. TITULO PRINCIPAL */
@@ -94,7 +95,7 @@ st.markdown(f"""
         text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
-    /* 3. ESTILO DOS TÍTULOS LATERAIS (AGORA FORÇADO VIA HTML BYPASS) */
+    /* 3. ESTILO DOS TÍTULOS LATERAIS (HTML BYPASS) */
     .neon-sidebar-header {{ 
         font-size: 1.5em; 
         font-weight: 800; 
