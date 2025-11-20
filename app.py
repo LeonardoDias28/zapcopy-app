@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - FIX PIX COPIA/COLA)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - FIX ESTILO BOTÃO CIRÚRGICO)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -186,30 +186,45 @@ st.markdown(f"""
         box-shadow: 0 -2px 8px rgba(0, 255, 192, 0.3);
         font-weight: 700 !important;
     }}
-    .stTabs [aria-selected="false"] {{
-        font-weight: 400 !important;
-    }}
-
-    /* TITULOS DE SESSÃO (h2/subheader) */
-    h2 {{
-        color: {ACCENT_COLOR};
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        text-shadow: 0 0 3px rgba(0, 255, 192, 0.2);
-    }}
-
-    /* BOTÕES PRIMÁRIOS */
+    
+    /* BOTÃO PIX PRIMÁRIO (Passo 2) - VERMELHO */
     .stButton > button {{
-        background-color: {ACCENT_COLOR}; 
-        color: {BG_COLOR} !important; 
+        background-color: #FF4B4B; /* Cor vermelha para destaque */
+        color: #FFFFFF !important; 
         border-radius: 8px;
         font-weight: 600;
-        box-shadow: 0 0 10px {ACCENT_COLOR}; 
+        box-shadow: 0 0 10px #FF4B4B; 
         transition: all 0.3s ease;
     }}
-    .stButton > button:hover {{
-        box-shadow: 0 0 20px {ACCENT_COLOR};
+    
+    /* BOTÃO LIMPAR SECUNDÁRIO (Ações) - NEON GREEN */
+    /* Miramos especificamente no botão de Limpar (st.button) */
+    .stButton:nth-child(3) > button {{
+        background-color: {ACCENT_COLOR} !important;
+        color: {BG_COLOR} !important; 
+        box-shadow: 0 0 10px {ACCENT_COLOR} !important; 
+    }}
+
+    /* *************************************************** */
+    /* FIX ESTILO BOTÃO CONVERSA (Passo 1) - USANDO CSS CIRÚRGICO */
+    /* *************************************************** */
+    /* Miramos no st.link_button secundário para aplicar o estilo NEON GREEN */
+    [data-testid^="stLinkButton"]:first-child a {{
+        background-color: {SECONDARY_BG_COLOR} !important;
+        color: {ACCENT_COLOR} !important;
+        border: 1px solid {ACCENT_COLOR} !important;
+        border-radius: 8px !important;
+        box-shadow: 0 0 10px rgba(0, 255, 192, 0.5) !important;
+        font-weight: 600;
+    }}
+    [data-testid^="stLinkButton"]:first-child a:hover {{
+        background-color: #252530 !important;
+        box-shadow: 0 0 20px {ACCENT_COLOR} !important;
         transform: translateY(-2px);
+    }}
+    /* Corrigindo a cor do ícone SVG */
+    [data-testid^="stLinkButton"]:first-child a svg {{
+        fill: {ACCENT_COLOR} !important;
     }}
     
     /* Subtítulo */
@@ -342,7 +357,7 @@ with st.container(border=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
     # ==============================================================================
-    # 📤 ZONA DE SAÍDA (FIX PIX PURO PARA COPIA/COLA)
+    # 📤 ZONA DE SAÍDA (BOTÕES)
     # ==============================================================================
 
     if script_final:
@@ -357,11 +372,8 @@ with st.container(border=True):
         link_pix_code = ""
         
         # --- ENCODING ---
-        # Conversa: Usa script_final_clean (Mensagem + Aviso do Pix)
         script_final_clean = script_final.replace('\n', '%0A') 
         msg_texto_encoded = quote(script_final_clean)
-        
-        # PIX Puro: Usa SOMENTE o pix_gerado
         pix_payload_clean = pix_gerado.replace('\n', '%0A')
         msg_pix_encoded = quote(pix_payload_clean)
 
@@ -370,24 +382,20 @@ with st.container(border=True):
         if celular_cliente:
             nums = "".join(filter(str.isdigit, celular_cliente.strip()))
             if not nums.startswith("55"): nums = "55" + nums
-            # Base com telefone
             base_link_sem_query = f"https://api.whatsapp.com/send?phone={nums}"
             
-            link_texto = f"{base_link_sem_query}&text={msg_texto_encoded}" # Inicia com &text
+            link_texto = f"{base_link_sem_query}&text={msg_texto_encoded}"
             label_btn = f"Enviar Conversa para {nome_cliente}"
             
-            # Link PIX Puro (Com telefone, usa &text)
             link_pix_code = f"{base_link_sem_query}&text={msg_pix_encoded}" 
             
         else:
-            # Base SEM telefone
             base_link_sem_query = f"https://api.whatsapp.com/send"
             
-            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}" # Inicia com ?text
+            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}" 
             label_btn = "Abrir WhatsApp com Conversa"
 
-            # Link PIX Puro (Sem telefone, usa ?text)
-            link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}" # Inicia com ?text
+            link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}" 
             
         label_pix_btn = "💲 Enviar Pix (Copia e Cola)"
         
@@ -396,18 +404,20 @@ with st.container(border=True):
         
         with col_btn1:
             st.markdown("**Passo 1: Conversa**")
+            # Botão Conversa (Estilo Secundário - Neon Green via CSS)
             st.link_button(f"💬 {label_btn}", link_texto, type="secondary", use_container_width=True)
         
         with col_btn2:
             st.markdown("**Passo 2: Pagamento**")
             if pix_gerado:
-                # O BOTÃO DE PIX AGORA ENVIA APENAS O CÓDIGO PURO
+                # Botão PIX (Estilo Primário - Vermelho via CSS)
                 st.link_button(label_pix_btn, link_pix_code, type="primary", use_container_width=True)
             else:
                 st.info("Nenhum Pix gerado.")
 
         with col_btn3:
             st.markdown("**Ações**")
+            # Botão Limpar (Estilo Secundário - Neon Green via CSS)
             if st.button("🗑️ Limpar Formulário", type="secondary", use_container_width=True):
                 st.rerun()
 
