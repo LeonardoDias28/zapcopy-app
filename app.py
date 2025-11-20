@@ -210,15 +210,14 @@ st.markdown(f"""
     /* *************************************************** */
     /* FIX ESTILO BOTÃO CONVERSA (Passo 1) - USANDO CSS CIRÚRGICO */
     /* *************************************************** */
-    /* Miramos no st.link_button secundário para aplicar o estilo NEON GREEN */
+    /* ESTE É O BLOCO MAIS IMPORTANTE PARA VOCÊ */
     [data-testid^="stLinkButton"]:first-child a {{
-        background-color: {SECONDARY_BG_COLOR} !important;
-        color: {ACCENT_COLOR} !important;
-        border: 1px solid {ACCENT_COLOR} !important;
-        border-radius: 8px !important;
+        background-color: {SECONDARY_BG_COLOR} !important; /* Fundo escuro */
+        color: {ACCENT_COLOR} !important; /* Texto neon */
+        border: 1px solid {ACCENT_COLOR} !important; /* Borda neon */
+        border-radius: 8px !important; /* Arredondamento igual aos outros */
         box-shadow: 0 0 10px rgba(0, 255, 192, 0.5) !important;
         font-weight: 600;
-        /* Força a cor do texto do link (que estava ficando cinza) */
         text-decoration: none !important; 
     }}
     [data-testid^="stLinkButton"]:first-child a:hover {{
@@ -260,6 +259,7 @@ st.divider()
 
 # --- SIDEBAR (CONFIGURAÇÕES GERAIS) ---
 with st.sidebar:
+    # A classe neon-sidebar-header agora deve estar funcionando perfeitamente
     st.markdown('<h3 class="neon-sidebar-header">Configurar Pix</h3>', unsafe_allow_html=True)
     st.caption("Dados obrigatórios para o código funcionar.")
     meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email", value="") 
