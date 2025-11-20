@@ -58,58 +58,80 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (VISUAL FINAL)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
 
-# --- BLOCO DE CSS PARA ESTILIZAÇÃO PREMIUM E ESPAÇAMENTO ---
-st.markdown("""
-<style>
-    /* Reduz o padding padrão do Streamlit no topo */
-    .block-container {
-        padding-top: 1rem !important;
-        padding-bottom: 0rem;
-    }
-    
-    /* Estilização para o subtítulo "Sistema de Cobrança Otimizado..." */
-    .premium-subtitle {
-        font-family: 'Roboto', sans-serif; 
-        font-size: 1.3em; /* AUMENTADO */
-        font-weight: 700; /* NEGRITO FORTE */
-        color: #444; /* Cinza escuro profissional */
-        letter-spacing: 0.08em; /* Aumenta o espaçamento entre letras */
-        text-align: center;
-        margin-top: 10px !important; 
-        margin-bottom: 20px !important; /* Espaço para a linha divisória */
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Sombra mais visível */
-    }
+# --- DEFINIÇÃO DE CORES NEON (Cyber Green) ---
+ACCENT_COLOR = "#00FFC0" # Verde Neon
+BG_COLOR = "#101018" # Fundo Escuro Suave
+TEXT_COLOR = "#EAEAEA" # Texto Claro
 
-    /* Centraliza e remove margens indesejadas do container da logo */
-    .logo-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin-top: -15px !important; /* Puxa o topo para cima */
-        margin-bottom: 0px !important;
-    }
-    /* Ajuste de margem para o conteúdo após a linha divisória */
-    [data-testid="stVerticalBlock"] > div:first-child {
-        margin-top: 5px !important; 
-    }
+st.markdown(f"""
+<style>
+    /* 1. CONFIGURAÇÃO DE TEMA BASE (Fundo, Texto e Fontes) */
+    .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; }}
+    .block-container {{ padding-top: 1.5rem !important; }}
+    
+    /* 2. LOGO E CABEÇALHO CENTRALIZADOS E AMPLIADOS */
+    .logo-container {{
+        margin-top: -10px !important;
+        margin-bottom: 30px !important;
+        /* Estilo da Sombra para o Bloco */
+        border-radius: 10px;
+        padding: 10px;
+    }}
+    .premium-subtitle {{
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.5em; /* SIGNIFICATIVAMENTE MAIOR */
+        font-weight: 700; 
+        color: {ACCENT_COLOR}; /* Cor Neon */
+        letter-spacing: 0.1em; /* Maior espaçamento */
+        text-align: center;
+        margin-top: 15px !important; 
+        /* Efeito de Brilho Sutil */
+        text-shadow: 0 0 5px {ACCENT_COLOR}, 0 0 10px rgba(0, 255, 192, 0.5); 
+    }}
+    
+    /* 3. ESTILO DOS CONTAINERS, INPUTS E BOTÕES */
+    .stContainer, [data-testid="stVerticalBlock"] {{
+        background-color: #1A1A24; /* Um pouco mais claro que o BG para profundidade */
+        border: 1px solid #333344;
+        border-radius: 12px; /* Cantos Arredondados */
+        padding: 30px; /* Mais padding para elegância */
+        margin-bottom: 25px; /* Mais espaço entre as sessões */
+    }}
+    .stContainer {{
+        box-shadow: 0 0 10px rgba(0, 255, 192, 0.15); /* Glow Suave */
+    }}
+
+    /* 4. BOTÕES PRIMÁRIOS (Cor Neon) */
+    .stButton > button {{
+        background-color: {ACCENT_COLOR}; 
+        color: #101018 !important; /* Texto escuro no botão claro */
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 0 8px {ACCENT_COLOR}; /* Efeito Glow/Brilho */
+        transition: all 0.3s ease;
+    }}
+    .stButton > button:hover {{
+        background-color: #00FFD0;
+        box-shadow: 0 0 15px {ACCENT_COLOR};
+        transform: scale(1.02);
+    }}
 </style>
 """, unsafe_allow_html=True)
-# --- FIM DO NOVO BLOCO DE CSS ---
+# --- FIM DO BLOCO DE CSS NEON ---
 
 
-# URL DA SUA LOGO HOSPEDADA NO GITHUB
+# URL DA SUA LOGO HOSPEDADA NO GITHUB (IDÊNTICO)
 LOGO_URL = "https://raw.githubusercontent.com/LeonardoDias28/zapcopy-app/main/logo-zapcopy-pro.png"
 
-# Substituindo o st.title por HTML para exibir a logo com subtítulo estilizado
+# Substituindo o st.title por HTML para exibir a logo (Ampliada para 420px)
 st.markdown(f"""
     <div class="logo-container">
-        <img src="{LOGO_URL}" width="350"> 
+        <img src="{LOGO_URL}" width="420"> 
         <p class="premium-subtitle">Sistema de Cobrança Otimizado para WhatsApp</p>
     </div>
 """, unsafe_allow_html=True)
@@ -129,6 +151,7 @@ with st.sidebar:
     tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
 # --- ÁREA PRINCIPAL ---
+# O layout e a funcionalidade aqui são mantidos intactos, mas o estilo é totalmente novo
 with st.container(border=True):
     st.subheader("👤 Quem é o Cliente?")
     col_cli1, col_cli2 = st.columns(2)
