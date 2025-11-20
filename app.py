@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - REFINADO)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - TÍTULOS LATERAIS)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -71,65 +71,59 @@ TEXT_COLOR = "#EAEAEA" # Texto Claro
 
 st.markdown(f"""
 <style>
-    /* 1. CONFIGURAÇÃO DE TEMA BASE (Fundo, Texto e Fontes) */
+    /* 1. CONFIGURAÇÃO DE TEMA BASE */
     .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
     .block-container {{ padding-top: 1.5rem !important; }}
     
-    /* 2. TITULO PRINCIPAL (ZapCopy Pro - como um h1/h2 customizado) */
+    /* 2. TITULO PRINCIPAL */
     h1 {{
         font-family: 'Montserrat', sans-serif;
-        font-size: 3.5em; /* Tamanho grande para destaque */
-        font-weight: 800; /* Extra Bold */
-        color: {ACCENT_COLOR}; /* Cor Neon */
-        letter-spacing: 0.12em; /* Maior espaçamento */
+        font-size: 3.5em; 
+        font-weight: 800; 
+        color: {ACCENT_COLOR}; 
+        letter-spacing: 0.12em; 
         text-align: center;
         margin-top: 20px !important; 
         margin-bottom: 5px !important;
-        text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); /* Glow mais forte */
+        text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
-    /* Subtítulo "Sistema de Cobrança Otimizado para WhatsApp" */
-    .stMarkdown p:has(.premium-subtitle-text) {{
-        font-family: 'Montserrat', sans-serif;
-        font-size: 1.3em; 
-        font-weight: 600; 
-        color: {TEXT_COLOR}; 
-        letter-spacing: 0.08em; 
-        text-align: center;
-        margin-top: 0px !important; 
-        margin-bottom: 25px !important; 
-        text-shadow: 0 0 3px rgba(255,255,255,0.1); 
+    /* 3. ESTILO DOS TÍTULOS LATERAIS (h3/h4) - NOVOS AJUSTES AQUI */
+    .stSidebar h3, .stSidebar h4 {{ 
+        font-size: 1.5em; /* Maior que o padrão da sidebar */
+        font-weight: 800; /* Extra Bold */
+        color: {ACCENT_COLOR}; 
+        letter-spacing: 0.1em;
+        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5); /* Glow Forte */
+        margin-top: 15px;
+        margin-bottom: 5px;
     }}
 
-    /* 3. ESTILO DOS CONTAINERS, INPUTS E BOTÕES */
+
+    /* 4. ESTILO DOS CONTAINERS, INPUTS E BOTÕES */
     .stContainer, [data-testid="stVerticalBlock"] {{
-        background-color: {SECONDARY_BG_COLOR}; 
+        background-color: {SECONDARY_BG_COLOR};
         border: 1px solid #333344;
         border-radius: 12px; 
         padding: 30px; 
-        margin-bottom: 25px; 
+        margin-bottom: 25px;
         box-shadow: 0 0 10px rgba(0, 255, 192, 0.15); 
     }}
 
-    /* SIDEBAR */
+    /* Sidebar Styles */
     .stSidebar {{
         background-color: {SECONDARY_BG_COLOR};
         border-right: 1px solid #333344;
         box-shadow: 0 0 10px rgba(0, 255, 192, 0.05);
     }}
-    .stSidebar .st-emotion-cache-1ujif6j {{ /* Títulos da Sidebar */
-        color: {ACCENT_COLOR};
-        text-shadow: 0 0 5px rgba(0, 255, 192, 0.3);
-    }}
-    .stSidebar label {{ color: {TEXT_COLOR}; }} /* Labels dos inputs */
+    .stSidebar label {{ color: {TEXT_COLOR}; }}
 
     /* INPUTS DE TEXTO */
-    .stTextInput > div > div > input {{
+    .stTextInput > div > div > input, .stSelectbox > div > div {{
         background-color: #252530;
         color: {TEXT_COLOR};
         border: 1px solid #444;
         border-radius: 8px;
-        padding: 10px;
         box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
     }}
     .stTextInput > div > div > input:focus {{
@@ -137,31 +131,8 @@ st.markdown(f"""
         box-shadow: 0 0 5px {ACCENT_COLOR}, inset 0 0 5px rgba(0,0,0,0.5);
     }}
 
-    /* SELECIONAR CAIXAS (SELECTBOX) */
-    .stSelectbox > div > div {{
-        background-color: #252530;
-        color: {TEXT_COLOR};
-        border: 1px solid #444;
-        border-radius: 8px;
-        box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
-    }}
-    .stSelectbox > div > div:focus {{
-        border-color: {ACCENT_COLOR};
-        box-shadow: 0 0 5px {ACCENT_COLOR};
-    }}
-
     /* TABS */
-    .stTabs [data-baseweb="tab-list"] button {{
-        color: {TEXT_COLOR};
-        background-color: #1A1A24;
-        border-radius: 8px 8px 0 0;
-        border: 1px solid #333344;
-        border-bottom: none;
-        margin-right: 5px;
-        padding: 10px 15px;
-        box-shadow: none;
-    }}
-    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {{
+    .stTabs [aria-selected="true"] {{
         color: {ACCENT_COLOR};
         border-color: {ACCENT_COLOR};
         background-color: {SECONDARY_BG_COLOR};
@@ -176,41 +147,30 @@ st.markdown(f"""
         text-shadow: 0 0 3px rgba(0, 255, 192, 0.2);
     }}
 
-    /* BOTÕES */
+    /* BOTÕES PRIMÁRIOS */
     .stButton > button {{
         background-color: {ACCENT_COLOR}; 
         color: {BG_COLOR} !important; 
-        border: none;
         border-radius: 8px;
-        padding: 10px 20px;
         font-weight: 600;
         box-shadow: 0 0 10px {ACCENT_COLOR}; 
-        transition: all 0.3s ease;
     }}
     .stButton > button:hover {{
-        background-color: #00FFD0;
         box-shadow: 0 0 20px {ACCENT_COLOR};
         transform: translateY(-2px);
     }}
     
-    /* Outros elementos */
-    .stDivider {{ border-top: 1px solid {ACCENT_COLOR}; opacity: 0.3; margin: 30px 0; }}
-    .stSuccess {{ background-color: rgba(0,255,192,0.1); border-color: {ACCENT_COLOR}; color: {TEXT_COLOR}; }}
-    .stInfo {{ background-color: rgba(123,104,238,0.1); border-color: #7B68EE; color: {TEXT_COLOR}; }}
-    .st-emotion-cache-1rs60qq {{ /* st.expander header */
-        background-color: #252530;
-        border-radius: 8px;
-        border: 1px solid #333344;
-    }}
-    .st-emotion-cache-1rs60qq p {{ color: {TEXT_COLOR}; }} /* st.expander text */
-
-    /* Tooltip styling */
-    .stTooltip {{
-        background-color: #252530;
-        color: {TEXT_COLOR};
-        border: 1px solid {ACCENT_COLOR};
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 255, 192, 0.2);
+    /* Subtítulo */
+    .premium-subtitle-text {{
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.3em; 
+        font-weight: 600; 
+        color: {TEXT_COLOR}; 
+        letter-spacing: 0.08em; 
+        text-align: center;
+        margin-top: 0px !important; 
+        margin-bottom: 25px !important; 
+        text-shadow: 0 0 3px rgba(255,255,255,0.1); 
     }}
 
 </style>
@@ -230,14 +190,16 @@ st.divider()
 
 # --- SIDEBAR (CONFIGURAÇÕES GERAIS) ---
 with st.sidebar:
-    st.header("⚙️ Configurar Pix")
+    # AGORA COM ESTILO DE H1 MINUSCULO
+    st.header("Configurar Pix") 
     st.caption("Dados obrigatórios para o código funcionar.")
     meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email")
     meu_nome = st.text_input("Seu Nome Completo")
     minha_cidade = st.text_input("Sua Cidade", value="Sao Paulo")
     
     st.divider()
-    st.header("🎭 Personalização")
+    # AGORA COM ESTILO DE H1 MINUSCULO
+    st.header("Personalização") 
     tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
 # --- ÁREA PRINCIPAL ---
@@ -352,7 +314,7 @@ if script_final:
         
         if pix_gerado:
              msg_pix_encoded = quote(pix_gerado)
-             link_pix_code = f"{base_url}?text={msg_pix_encoded}"
+             link_pix_code = f"{base_url}&text={msg_pix_encoded}"
              
         label_btn = f"Enviar para {nome_cliente}"
     
