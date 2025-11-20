@@ -52,6 +52,13 @@ def tela_login():
         
         .stApp { background-color: #101018; color: #EAEAEA; font-family: 'Montserrat', sans-serif; }
         
+        /* ESTILO PARA DEIXAR 'USUÁRIO' E 'SENHA' EM NEGRITO */
+        .stTextInput label p {
+            font-weight: 800 !important;
+            color: #EAEAEA !important;
+            font-size: 16px !important;
+        }
+        
         /* Inputs do Login */
         .stTextInput input {
             background-color: #252530; color: white; 
