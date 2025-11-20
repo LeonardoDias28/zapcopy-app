@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - ADICIONANDO BOTÃO LIMPAR)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - CORREÇÃO PIX COPIA/COLA)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -79,7 +79,7 @@ st.markdown(f"""
     }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
-    /* FIXES NO HEADER E CHEVRON (MANTIDOS) */
+    /* FIXES NO HEADER E CHEVRON */
     .stApp > header {{
         background-color: {BG_COLOR} !important; 
         box-shadow: none !important;
@@ -243,7 +243,6 @@ st.divider()
 with st.sidebar:
     st.markdown('<h3 class="neon-sidebar-header">Configurar Pix</h3>', unsafe_allow_html=True)
     st.caption("Dados obrigatórios para o código funcionar.")
-    # Placeholders para limpeza
     meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email", value="") 
     meu_nome = st.text_input("Seu Nome Completo", value="", placeholder="Ex: Leonardo Dias") 
     minha_cidade = st.text_input("Sua Cidade", placeholder="Ex: São Paulo", value="") 
@@ -253,8 +252,6 @@ with st.sidebar:
     tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
 # --- ÁREA PRINCIPAL (CONTÊINER ÚNICO) ---
-
-# TODO o conteúdo principal é envolvido por um único st.container
 with st.container(border=True):
 
     st.subheader("👤 Quem é o Cliente?")
@@ -345,68 +342,55 @@ with st.container(border=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
     # ==============================================================================
-    # 📤 ZONA DE SAÍDA (AGORA COM BOTÃO DE LIMPEZA)
+    # 📤 ZONA DE SAÍDA (CORRIGIDA PARA COPIA/COLA)
     # ==============================================================================
 
     if script_final:
         st.divider()
         st.success("✅ Mensagem Pronta!")
         
+        # 1. Visualizar e Copiar Script da Conversa
         with st.expander("👀 Ver texto da mensagem"):
             st.write(script_final)
 
         link_texto = ""
-        link_pix_code = ""
         
         msg_texto_encoded = quote(script_final)
         
         if celular_cliente:
             nums = "".join(filter(str.isdigit, celular_cliente))
             if not nums.startswith("55"): nums = "55" + nums
-            
             base_url = f"https://api.whatsapp.com/send?phone={nums}"
-            link_texto = f"{base_url}&text={msg_texto_encoded}"
-            
-            if pix_gerado:
-                 msg_pix_encoded = quote(pix_gerado)
-                 link_pix_code = f"{base_url}?text={msg_pix_encoded}"
-                 
             label_btn = f"Enviar para {nome_cliente}"
-        
         else:
             base_url = "https://api.whatsapp.com/send"
-            link_texto = f"{base_url}?text={msg_texto_encoded}"
-            
-            if pix_gerado:
-                 msg_pix_encoded = quote(pix_gerado)
-                 link_pix_code = f"{base_url}?text={msg_pix_encoded}"
-                 
             label_btn = "Abrir WhatsApp"
 
-        # TRÊS COLUNAS: Conversa, Pagamento, Limpeza
-        col_btn1, col_btn2, col_btn3 = st.columns(3)
+        link_texto = f"{base_url}?text={msg_texto_encoded}"
+        
+        # Colunas: Conversa, Limpeza
+        col_btn1, col_btn3 = st.columns([2, 1])
         
         with col_btn1:
-            st.markdown("**Passo 1: A Conversa**")
-            st.link_button(f"💬 {label_btn}", link_texto, type="secondary", use_container_width=True)
+            st.markdown("**Passo 1: Enviar Conversa**")
+            st.link_button(f"💬 {label_btn}", link_texto, type="primary", use_container_width=True) # Alterado para PRIMARY
         
-        with col_btn2:
-            if pix_gerado:
-                st.markdown("**Passo 2: O Pagamento**")
-                st.link_button("💲 Enviar Pix (Copia e Cola)", link_pix_code, type="primary", use_container_width=True)
-            else:
-                st.markdown("**Passo 2: (Sem Pix)**")
-                st.info("Nenhum Pix gerado nesta mensagem.")
-
         with col_btn3:
             st.markdown("**Ações**")
-            # BOTÃO DE LIMPEZA QUE REINICIA O APP
             if st.button("🗑️ Limpar Formulário", type="secondary", use_container_width=True):
                 st.rerun()
 
+        # 2. Código Pix (Copia e Cola)
         if pix_gerado:
             st.markdown("---")
-            with st.expander("📱 Testar QR Code (Para você)"):
+            st.markdown("#### 💲 Código PIX (Copia e Cola)")
+            st.caption("Use o QR Code abaixo ou copie e cole este código no aplicativo do seu banco.")
+            
+            # Área de texto para Copia e Cola
+            st.text_area("Código PIX:", pix_gerado, height=3, key='pix_payload_output', help="Clique no código para copiar para a área de transferência.")
+
+            # 3. QR Code
+            with st.expander("📱 Ver QR Code"):
                 qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_gerado)}"
                 col_qr, col_txt = st.columns([1,3])
                 with col_qr:
