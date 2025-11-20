@@ -78,8 +78,14 @@ st.markdown(f"""
     /* *************************************************** */
     /* NOVO: ELIMINA A FAIXA BRANCA DO TOPO (HEADER) */
     /* *************************************************** */
-    .stApp > header {{
-        background-color: {BG_COLOR}; 
+    .stApp > header, .stApp > header > div, .stApp > header > div:first-child {{
+        background-color: {BG_COLOR} !important; 
+        color: {TEXT_COLOR} !important;
+        box-shadow: none !important;
+    }}
+    /* Tenta forçar o fundo do body e html também */
+    html, body {{
+        background-color: {BG_COLOR} !important;
     }}
     
     /* FIX NO CHEVRON (SETA) DA SIDEBAR: FORÇA A VISIBILIDADE */
@@ -97,7 +103,7 @@ st.markdown(f"""
     /* NEGITO E ESTILIZAÇÃO */
     /* *************************************************** */
     label, .stLabel {{
-        font-weight: 700 !important; /* FORÇA NEGRITO */
+        font-weight: 700 !important; 
         color: {TEXT_COLOR} !important;
     }}
 
@@ -322,7 +328,7 @@ with st.container(border=True):
             if tom_voz == "Profissional 👔":
                 script_final = f"Olá {nome_cliente}. Confirmamos seu agendamento{data_str} para às {hora_str}. Solicitamos pontualidade. Obrigado."
             else:
-                script_final = f"Confirmadíssimo, {nome_cliente}! Te espero{data_str} às {horário_str}. Até lá! 👊"
+                script_final = f"Confirmadíssimo, {nome_cliente}! Te espero{data_str} às {hora_str}. Até lá! 👊"
 
     # === ABA 4: FEEDBACK ===
     with tab4:
@@ -354,7 +360,7 @@ if script_final:
         
         if pix_gerado:
              msg_pix_encoded = quote(pix_gerado)
-             link_pix_code = f"{base_url}&text={msg_pix_encoded}"
+             link_pix_code = f"{base_url}?text={msg_pix_encoded}"
              
         label_btn = f"Enviar para {nome_cliente}"
     
