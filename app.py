@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - ELIMINANDO FAIXA BRANCA)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - CORREÇÕES DE FUNDO E ÍCONE)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -72,20 +72,24 @@ TEXT_COLOR = "#EAEAEA" # Texto Claro
 st.markdown(f"""
 <style>
     /* 1. CONFIGURAÇÃO DE TEMA BASE */
-    .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
+    /* FORÇA O FUNDO EM NÍVEL HTML/BODY E APP */
+    html, body, .stApp {{ 
+        background-color: {BG_COLOR} !important; 
+        color: {TEXT_COLOR}; 
+        font-family: 'Montserrat', sans-serif; 
+    }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
     /* *************************************************** */
-    /* NOVO: ELIMINA A FAIXA BRANCA DO TOPO (HEADER) */
+    /* FINAL FIX: ELIMINA A FAIXA BRANCA DO TOPO (HEADER) */
     /* *************************************************** */
-    .stApp > header, .stApp > header > div, .stApp > header > div:first-child {{
+    /* Mirando o elemento principal do cabeçalho */
+    .stApp > header {{
         background-color: {BG_COLOR} !important; 
-        color: {TEXT_COLOR} !important;
         box-shadow: none !important;
     }}
-    /* Tenta forçar o fundo do body e html também */
-    html, body {{
-        background-color: {BG_COLOR} !important;
+    .stApp > header > div {{
+        background-color: {BG_COLOR} !important; 
     }}
     
     /* FIX NO CHEVRON (SETA) DA SIDEBAR: FORÇA A VISIBILIDADE */
@@ -94,7 +98,7 @@ st.markdown(f"""
         color: {TEXT_COLOR} !important;
     }}
     .stApp > header button svg {{
-        fill: {TEXT_COLOR} !important; 
+        fill: {TEXT_COLOR} !important; /* Cor do ícone em branco/claro */
         opacity: 1 !important;
         filter: none !important; 
     }}
