@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - OTIMIZAÇÃO DE INPUTS)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - ADICIONANDO BOTÃO LIMPAR)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -72,7 +72,6 @@ TEXT_COLOR = "#EAEAEA" # Texto Claro
 st.markdown(f"""
 <style>
     /* 1. CONFIGURAÇÃO DE TEMA BASE */
-    /* FORÇA O FUNDO EM NÍVEL HTML/BODY E APP */
     html, body, .stApp {{ 
         background-color: {BG_COLOR} !important; 
         color: {TEXT_COLOR}; 
@@ -81,9 +80,12 @@ st.markdown(f"""
     .block-container {{ padding-top: 1.5rem !important; }}
 
     /* FIXES NO HEADER E CHEVRON (MANTIDOS) */
-    .stApp > header, .stApp > header > div {{
+    .stApp > header {{
         background-color: {BG_COLOR} !important; 
         box-shadow: none !important;
+    }}
+    .stApp > header > div {{
+        background-color: {BG_COLOR} !important; 
     }}
     .stApp > header button, .stApp > header button svg {{
         visibility: visible !important; 
@@ -93,9 +95,7 @@ st.markdown(f"""
         filter: none !important; 
     }}
     
-    /* *************************************************** */
     /* NEGITO E ESTILIZAÇÃO */
-    /* *************************************************** */
     label, .stLabel {{
         font-weight: 700 !important; 
         color: {TEXT_COLOR} !important;
@@ -133,9 +133,7 @@ st.markdown(f"""
     }}
 
 
-    /* *************************************************** */
     /* ESTILO DO CONTÊINER PRINCIPAL ÚNICO (Elegante)*/
-    /* *************************************************** */
     .stContainer {{
         background-color: {SECONDARY_BG_COLOR};
         border: none !important; 
@@ -245,10 +243,10 @@ st.divider()
 with st.sidebar:
     st.markdown('<h3 class="neon-sidebar-header">Configurar Pix</h3>', unsafe_allow_html=True)
     st.caption("Dados obrigatórios para o código funcionar.")
-    # REMOVENDO VALORES INICIAIS DA SIDEBAR
-    meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email", value="") # Valor removido
-    meu_nome = st.text_input("Seu Nome Completo", value="") # Valor removido
-    minha_cidade = st.text_input("Sua Cidade", placeholder="Ex: São Paulo", value="") # Valor inicial removido
+    # Placeholders para limpeza
+    meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email", value="") 
+    meu_nome = st.text_input("Seu Nome Completo", value="", placeholder="Ex: Leonardo Dias") 
+    minha_cidade = st.text_input("Sua Cidade", placeholder="Ex: São Paulo", value="") 
     
     st.divider()
     st.markdown('<h3 class="neon-sidebar-header">Personalização</h3>', unsafe_allow_html=True)
@@ -262,10 +260,8 @@ with st.container(border=True):
     st.subheader("👤 Quem é o Cliente?")
     col_cli1, col_cli2 = st.columns(2)
     with col_cli1:
-        # Valor inicial removido
         nome_cliente = st.text_input("Nome do Cliente", value="", placeholder="Ex: João Silva") 
     with col_cli2:
-        # Valor inicial removido e placeholder mantido
         celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999999999", value="")
 
     st.markdown("<br>", unsafe_allow_html=True) 
@@ -281,7 +277,6 @@ with st.container(border=True):
     # === ABA 1: COBRANÇA ===
     with tab1:
         cenario_cobranca = st.selectbox("Cenário:", ["Enviar Pix (Padrão)", "Lembrete de Vencimento", "Cobrança Atrasada"])
-        # VALOR CORRIGIDO: Agora usa placeholder para exemplo
         valor_cobranca = st.text_input("Valor (R$)", placeholder="Ex: 150,00", value="")
         
         if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
@@ -304,7 +299,6 @@ with st.container(border=True):
                     intro = f"{nome_cliente}, não identificamos o pagamento de R$ {valor_cobranca}. Precisamos regularizar para evitar pendências."
 
             if meu_pix and meu_nome:
-                # O valor padrão é 0.00 se o usuário deixar o campo vazio
                 valor_para_pix = valor_cobranca if valor_cobranca else "0,00"
                 pix_gerado = gerar_pix_payload(meu_pix, meu_nome, minha_cidade, valor_para_pix)
                 msg_pix_aviso = "\n\n👇 Segue o código 'Copia e Cola' na mensagem abaixo:"
@@ -315,7 +309,7 @@ with st.container(border=True):
     # === ABA 2: VENDAS ===
     with tab2:
         cenario_venda = st.selectbox("Objetivo:", ["Oferta Especial", "Recuperar Cliente", "Upsell (Oferecer mais)"])
-        produto = st.text_input("Nome do Produto", value="", placeholder="Ex: Serviço Premium") # Valor inicial removido
+        produto = st.text_input("Nome do Produto", value="", placeholder="Ex: Serviço Premium")
         
         if st.button("✨ Gerar Venda", type="primary", use_container_width=True):
             if cenario_venda == "Oferta Especial":
@@ -351,7 +345,7 @@ with st.container(border=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
     # ==============================================================================
-    # 📤 ZONA DE SAÍDA
+    # 📤 ZONA DE SAÍDA (AGORA COM BOTÃO DE LIMPEZA)
     # ==============================================================================
 
     if script_final:
@@ -375,7 +369,7 @@ with st.container(border=True):
             
             if pix_gerado:
                  msg_pix_encoded = quote(pix_gerado)
-                 link_pix_code = f"{base_url}&text={msg_pix_encoded}"
+                 link_pix_code = f"{base_url}?text={msg_pix_encoded}"
                  
             label_btn = f"Enviar para {nome_cliente}"
         
@@ -389,7 +383,8 @@ with st.container(border=True):
                  
             label_btn = "Abrir WhatsApp"
 
-        col_btn1, col_btn2 = st.columns(2)
+        # TRÊS COLUNAS: Conversa, Pagamento, Limpeza
+        col_btn1, col_btn2, col_btn3 = st.columns(3)
         
         with col_btn1:
             st.markdown("**Passo 1: A Conversa**")
@@ -402,6 +397,12 @@ with st.container(border=True):
             else:
                 st.markdown("**Passo 2: (Sem Pix)**")
                 st.info("Nenhum Pix gerado nesta mensagem.")
+
+        with col_btn3:
+            st.markdown("**Ações**")
+            # BOTÃO DE LIMPEZA QUE REINICIA O APP
+            if st.button("🗑️ Limpar Formulário", type="secondary", use_container_width=True):
+                st.rerun()
 
         if pix_gerado:
             st.markdown("---")
