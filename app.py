@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - SIDEBAR FIX FINAL)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - SIDEBAR HTML BYPASS)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -88,20 +88,19 @@ st.markdown(f"""
         text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
-    /* 3. ESTILO DOS TÍTULOS LATERAIS (FORÇADO E FOCADO APENAS EM H3/H4) */
-    /* Este seletor deve pegar APENAS os headers de st.header */
-    .stSidebar h3, .stSidebar h4 {{ 
+    /* 3. CLASSE PARA OS TÍTULOS INJETADOS NA SIDEBAR (FORÇA VISUAL) */
+    .neon-sidebar-header {{ 
         font-size: 1.5em; 
         font-weight: 800; 
-        color: {ACCENT_COLOR} !important; /* FORÇA COR NEON */
+        color: {ACCENT_COLOR} !important; /* FORÇANDO COR NEON */
         letter-spacing: 0.1em;
-        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; /* FORÇA GLOW */
+        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; /* FORÇANDO GLOW */
         margin-top: 15px;
         margin-bottom: 5px;
+        font-family: 'Montserrat', sans-serif;
     }}
     
     /* 4. RESET GERAL PARA LABELS E CAPTIONS NA SIDEBAR (GARANTE QUE FIQUEM CLAROS) */
-    /* Remove o estilo neon de onde não deve estar */
     .stSidebar label, .stSidebar p, .stSidebar div[data-testid^="stTextContainer"] {{
         color: {TEXT_COLOR} !important; 
         font-weight: 400;
@@ -184,7 +183,6 @@ st.markdown(f"""
 
 </style>
 """, unsafe_allow_html=True)
-# --- FIM DO BLOCO DE CSS NEON REFINADO ---
 
 
 # Substituindo a logo e o st.title por um cabeçalho coeso
@@ -197,16 +195,18 @@ st.markdown(f"""
 
 st.divider()
 
-# --- SIDEBAR (CONFIGURAÇÕES GERAIS) ---
+# --- SIDEBAR (CONFIGURAÇÕES GERAIS - AGORA COM HTML INJETADO) ---
 with st.sidebar:
-    st.header("Configurar Pix") 
+    # SUBSTITUÍ st.header() por st.markdown() com a classe customizada
+    st.markdown('<h3 class="neon-sidebar-header">Configurar Pix</h3>', unsafe_allow_html=True)
     st.caption("Dados obrigatórios para o código funcionar.")
     meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email")
     meu_nome = st.text_input("Seu Nome Completo")
     minha_cidade = st.text_input("Sua Cidade", value="Sao Paulo")
     
     st.divider()
-    st.header("Personalização") 
+    # SUBSTITUÍ st.header() por st.markdown() com a classe customizada
+    st.markdown('<h3 class="neon-sidebar-header">Personalização</h3>', unsafe_allow_html=True)
     tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
 # --- ÁREA PRINCIPAL ---
