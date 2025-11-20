@@ -88,16 +88,25 @@ st.markdown(f"""
         text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
-    /* 3. ESTILO DOS TÍTULOS LATERAIS (FORÇANDO ESTILO NEON) */
-    .stSidebar h3, .stSidebar h4 {{ 
-        font-size: 1.5em; /* Aumentado */
-        font-weight: 800; /* Extra Bold */
-        color: {ACCENT_COLOR} !important; /* AGORA FORÇANDO */
+    /* 3. ESTILO DOS TÍTULOS LATERAIS (FORÇADO E ESPECÍFICO) */
+    [data-testid="stSidebar"] h3, [data-testid="stSidebar"] h4 {{ 
+        font-size: 1.5em; 
+        font-weight: 800; 
+        color: {ACCENT_COLOR} !important; /* FORÇANDO COR NEON */
         letter-spacing: 0.1em;
-        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; /* AGORA FORÇANDO */
+        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; /* FORÇANDO GLOW */
         margin-top: 15px;
         margin-bottom: 5px;
     }}
+    /* SELETOR MAIS AGRESSIVO */
+    [data-testid="stSidebar"] [data-testid="stText"] p {{
+        font-size: 1.5em;
+        font-weight: 800;
+        color: {ACCENT_COLOR} !important;
+        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; 
+        letter-spacing: 0.1em;
+    }}
+
 
     /* 4. ESTILO GERAL DOS CONTAINERS, INPUTS E BOTÕES */
     .stContainer, [data-testid="stVerticalBlock"] {{
@@ -171,6 +180,7 @@ st.markdown(f"""
         margin-bottom: 25px !important; 
         text-shadow: 0 0 3px rgba(255,255,255,0.1); 
     }}
+    /* Outros estilos omitidos por brevidade... */
 
 </style>
 """, unsafe_allow_html=True)
@@ -311,7 +321,7 @@ if script_final:
         
         if pix_gerado:
              msg_pix_encoded = quote(pix_gerado)
-             link_pix_code = f"{base_url}&text={msg_pix_encoded}"
+             link_pix_code = f"{base_url}?text={msg_pix_encoded}"
              
         label_btn = f"Enviar para {nome_cliente}"
     
