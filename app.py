@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - CORREÇÃO PIX COPIA/COLA)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - FIX LINK WHATSAPP)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -342,7 +342,7 @@ with st.container(border=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
     # ==============================================================================
-    # 📤 ZONA DE SAÍDA (BOTÃO PIX RESTAURADO PARA WHATSAPP)
+    # 📤 ZONA DE SAÍDA (FIX WHATSAPP ENCODING)
     # ==============================================================================
 
     if script_final:
@@ -356,7 +356,9 @@ with st.container(border=True):
         link_texto = ""
         link_pix_code = ""
         
-        msg_texto_encoded = quote(script_final)
+        # FIX 1: Processa o script de conversa para codificação robusta
+        script_final_clean = script_final.replace('\n', '%0A') 
+        msg_texto_encoded = quote(script_final_clean)
         
         if celular_cliente:
             nums = "".join(filter(str.isdigit, celular_cliente))
@@ -367,17 +369,19 @@ with st.container(border=True):
             base_url = "https://api.whatsapp.com/send"
             label_btn = "Abrir WhatsApp com Conversa"
 
-        link_texto = f"{base_url}?text={msg_texto_encoded}"
+        link_texto = f"{base_url}&text={msg_texto_encoded}" # Constrói o link do script
         
         # Se PIX gerado, cria o link de envio do código PIX
         if pix_gerado:
-             msg_pix_encoded = quote(pix_gerado)
-             # ESTE É O LINK DO PIX QUE VOCÊ QUER QUE ABRA O WHATSAPP
-             link_pix_code = f"{base_url}?text={msg_pix_encoded}"
+             # FIX 2: Processa o payload do PIX para codificação robusta
+             pix_payload_clean = pix_gerado.replace('\n', '%0A')
+             msg_pix_encoded = quote(pix_payload_clean)
+             
+             # ESTE É O LINK DO PIX, AGORA CORRETAMENTE FORMATADO
+             link_pix_code = f"{base_url}&text={msg_pix_encoded}" 
              label_pix_btn = "💲 Enviar Pix (Copia e Cola)"
         
         # Colunas: Conversa, Pagamento, Limpeza
-        # Uso 3 colunas, mas a segunda pode ser Info se não houver PIX
         col_btn1, col_btn2, col_btn3 = st.columns(3)
         
         with col_btn1:
@@ -387,7 +391,7 @@ with st.container(border=True):
         with col_btn2:
             st.markdown("**Passo 2: Pagamento**")
             if pix_gerado:
-                # BOTÃO PIX RESTAURADO PARA ENVIAR VIA WHATSAPP
+                # BOTÃO PIX REATIVADO E CORRIGIDO PARA ENVIAR VIA WHATSAPP
                 st.link_button(label_pix_btn, link_pix_code, type="primary", use_container_width=True)
             else:
                 st.info("Nenhum Pix gerado.")
@@ -398,7 +402,6 @@ with st.container(border=True):
                 st.rerun()
 
         if pix_gerado:
-            # QR Code é mantido para quem precisa escanear/copiar para o banco
             st.markdown("---")
             with st.expander("📱 Testar ou Copiar Código PIX"):
                 st.markdown("##### Código PIX (Para copiar e colar no app do banco)")
