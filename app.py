@@ -58,53 +58,49 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (LAYOUT E MARGENS REFINADOS - VERSÃO PREMIUM)
+# 🎨 INTERFACE (VISUAL FINAL)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
 
-# --- BLOCO DE CSS PARA ESTILIZAÇÃO PREMIUM ---
+# --- BLOCO DE CSS PARA ESTILIZAÇÃO PREMIUM E ESPAÇAMENTO ---
 st.markdown("""
 <style>
-    /* Reduz o padding padrão do Streamlit no topo e rodapé para um look mais clean */
+    /* Reduz o padding padrão do Streamlit no topo */
     .block-container {
         padding-top: 1rem !important;
         padding-bottom: 0rem;
     }
     
-    /* Centraliza e dá respiro à logo, removendo margens indesejadas */
+    /* Estilização para o subtítulo "Sistema de Cobrança Otimizado..." */
+    .premium-subtitle {
+        font-family: 'Roboto', sans-serif; 
+        font-size: 1.3em; /* AUMENTADO */
+        font-weight: 700; /* NEGRITO FORTE */
+        color: #444; /* Cinza escuro profissional */
+        letter-spacing: 0.08em; /* Aumenta o espaçamento entre letras */
+        text-align: center;
+        margin-top: 10px !important; 
+        margin-bottom: 20px !important; /* Espaço para a linha divisória */
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.2); /* Sombra mais visível */
+    }
+
+    /* Centraliza e remove margens indesejadas do container da logo */
     .logo-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-top: -10px !important; /* Puxa para cima para remover espaço excessivo */
-        margin-bottom: 15px !important; /* Espaço entre a logo e a linha divisória */
+        margin-top: -15px !important; /* Puxa o topo para cima */
+        margin-bottom: 0px !important;
     }
-
-    /* Estilização para o subtítulo "Sistema de Cobrança Otimizado..." */
-    .premium-subtitle {
-        font-family: 'Roboto', sans-serif; /* Fonte moderna e limpa */
-        font-size: 1.15em; /* Um pouco maior que o padrão */
-        font-weight: 500; /* Semi-bold para destaque */
-        color: #333333; /* Cinza escuro elegante */
-        letter-spacing: 0.05em; /* Espaçamento entre letras para um visual sofisticado */
-        text-align: center;
-        margin-top: 5px !important; /* Aproxima do logo */
-        margin-bottom: 0px !important; /* Zera margem inferior para não empurrar o divider */
-        text-shadow: 0px 1px 2px rgba(0,0,0,0.1); /* Sombra suave para um leve brilho/profundidade */
-    }
-
-    /* Ajuste para o primeiro container (Quem é o Cliente) ficar mais próximo da linha */
+    /* Ajuste de margem para o conteúdo após a linha divisória */
     [data-testid="stVerticalBlock"] > div:first-child {
-        margin-top: 15px !important; /* Reduz a margem superior do primeiro bloco de conteúdo */
+        margin-top: 5px !important; 
     }
-
-    /* Opcional: Esconder a barra de menu do Streamlit para um visual mais clean */
-    /* div[data-testid="stToolbar"] { display: none; } */ 
 </style>
 """, unsafe_allow_html=True)
-# --- FIM DO BLOCO DE CSS ---
+# --- FIM DO NOVO BLOCO DE CSS ---
 
 
 # URL DA SUA LOGO HOSPEDADA NO GITHUB
@@ -113,7 +109,7 @@ LOGO_URL = "https://raw.githubusercontent.com/LeonardoDias28/zapcopy-app/main/lo
 # Substituindo o st.title por HTML para exibir a logo com subtítulo estilizado
 st.markdown(f"""
     <div class="logo-container">
-        <img src="{LOGO_URL}" width="300"> 
+        <img src="{LOGO_URL}" width="350"> 
         <p class="premium-subtitle">Sistema de Cobrança Otimizado para WhatsApp</p>
     </div>
 """, unsafe_allow_html=True)
