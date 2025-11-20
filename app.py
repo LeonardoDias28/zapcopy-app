@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - CORREÇÕES DE FUNDO E ÍCONE)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - CONTÊINERES SOFISTICADOS)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -145,21 +145,34 @@ st.markdown(f"""
     }}
 
 
-    /* 5. ESTILO GERAL DOS CONTAINERS, INPUTS E BOTÕES */
+    /* *************************************************** */
+    /* NOVO: ESTILO GERAL DOS CONTAINERS (MAIS SOFISTICADO)*/
+    /* *************************************************** */
     .stContainer, [data-testid="stVerticalBlock"] {{
         background-color: {SECONDARY_BG_COLOR};
-        border: 1px solid #333344;
-        border-radius: 12px; 
+        border: none; /* Remove a borda sólida */
+        border-radius: 18px; /* Cantos mais suaves */
         padding: 30px; 
         margin-bottom: 25px;
-        box-shadow: 0 0 10px rgba(0, 255, 192, 0.15); 
+        /* Novo efeito de sombra/brilho mais sutil e elegante */
+        box-shadow: 
+            0 2px 5px rgba(0, 0, 0, 0.4), /* Sombra para profundidade */
+            0 0 15px rgba(0, 255, 192, 0.2); /* Brilho neon sutil */
+        transition: box-shadow 0.3s ease-in-out; /* Animação suave para o brilho */
+    }}
+    .stContainer:hover, [data-testid="stVerticalBlock"]:hover {{
+        box-shadow: 
+            0 4px 8px rgba(0, 0, 0, 0.6), /* Sombra mais pronunciada no hover */
+            0 0 25px rgba(0, 255, 192, 0.4); /* Brilho neon mais intenso no hover */
     }}
 
     /* Sidebar Styles */
     .stSidebar {{
         background-color: {SECONDARY_BG_COLOR};
-        border-right: 1px solid #333344;
-        box-shadow: 0 0 10px rgba(0, 255, 192, 0.05);
+        border-right: none; /* Remove a borda da sidebar */
+        box-shadow: 
+            2px 0 5px rgba(0, 0, 0, 0.4), /* Sombra para profundidade */
+            0 0 15px rgba(0, 255, 192, 0.1); /* Brilho neon sutil */
     }}
 
     /* INPUTS DE TEXTO */
