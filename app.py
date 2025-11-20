@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - SIDEBAR FIX FINAL)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - LABELS EM NEGRITO)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -75,14 +75,21 @@ st.markdown(f"""
     .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
-    /* FIX NO CHEVRON (SETA) DA SIDEBAR: FORÇA A COR NEON NO SVG */
-    /* Este é o último recurso de CSS, forçando a cor do SVG */
+    /* *************************************************** */
+    /* NOVO: DEIXA TODOS OS RÓTULOS (LABELS) EM NEGRITO */
+    /* *************************************************** */
+    label, .stLabel {{
+        font-weight: 700 !important; /* FORÇA NEGRITO */
+        color: {TEXT_COLOR} !important;
+    }}
+    
+    /* FIX NO CHEVRON (SETA) DA SIDEBAR: FORÇA A VISIBILIDADE */
     .stApp > header button {{
-        visibility: visible !important; /* Garante que o botão não está escondido */
+        visibility: visible !important; 
         color: {TEXT_COLOR} !important;
     }}
     .stApp > header button svg {{
-        fill: {TEXT_COLOR} !important; /* Força a cor Branca/Clara no ícone */
+        fill: {TEXT_COLOR} !important; 
         opacity: 1 !important;
         filter: none !important; 
     }}
@@ -112,8 +119,8 @@ st.markdown(f"""
         font-family: 'Montserrat', sans-serif;
     }}
     
-    /* 4. RESET GERAL PARA LABELS E CAPTIONS NA SIDEBAR */
-    .stSidebar label, .stSidebar p, .stSidebar div[data-testid^="stTextContainer"] {{
+    /* 4. RESET GERAL PARA CAPTIONS NA SIDEBAR */
+    .stSidebar p, .stSidebar div[data-testid^="stTextContainer"] {{
         color: {TEXT_COLOR} !important; 
         font-weight: 400;
         font-size: 1em;
@@ -224,8 +231,10 @@ with st.container(border=True):
     st.subheader("👤 Quem é o Cliente?")
     col_cli1, col_cli2 = st.columns(2)
     with col_cli1:
+        # A label deste campo aparecerá em negrito (font-weight: 700)
         nome_cliente = st.text_input("Nome do Cliente", value="Fulano")
     with col_cli2:
+        # A label deste campo aparecerá em negrito (font-weight: 700)
         celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999999999")
     
     st.write("")
@@ -239,7 +248,9 @@ with st.container(border=True):
 
     # === ABA 1: COBRANÇA ===
     with tab1:
+        # A label deste campo aparecerá em negrito (font-weight: 700)
         cenario_cobranca = st.selectbox("Cenário:", ["Enviar Pix (Padrão)", "Lembrete de Vencimento", "Cobrança Atrasada"])
+        # A label deste campo aparecerá em negrito (font-weight: 700)
         valor_cobranca = st.text_input("Valor (R$)", value="100,00")
         
         if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
