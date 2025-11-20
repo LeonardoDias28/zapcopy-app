@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - CHEVRON FIX FINAL)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - CHEVRON VISIBILIDADE)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -75,11 +75,15 @@ st.markdown(f"""
     .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
-    /* FIX NO CHEVRON (SETA) DA SIDEBAR: FORÇA A COR NEON NO SVG */
-    .stApp header button svg {{
-        fill: {ACCENT_COLOR} !important; /* Força a cor Neon no ícone */
+    /* FIX FINAL PARA O CHEVRON (RECOLHER/EXPANDIR) */
+    .stApp > header button {{
+        visibility: visible !important; /* Garante que o botão não está escondido */
+        color: {TEXT_COLOR} !important;
+    }}
+    .stApp > header button svg {{
+        fill: {TEXT_COLOR} !important; /* Cor do ícone em branco/claro */
         opacity: 1 !important;
-        filter: drop-shadow(0 0 5px {ACCENT_COLOR}); /* Adiciona um brilho sutil */
+        filter: none !important; 
     }}
     
     /* 2. TITULO PRINCIPAL */
@@ -277,7 +281,7 @@ with st.container(border=True):
             elif cenario_venda == "Recuperar Cliente":
                 script_final = f"Ei {nome_cliente}, faz tempo que a gente não se fala! Chegou novidade de {produto} que é a sua cara."
             else:
-                script_final = f"{nome_cliente}, quem leva {produto} costuma ter muito resultado com esse complemento aqui. Posso adicionar no seu pacote?"
+                script_final = "{nome_cliente}, quem leva {produto} costuma ter muito resultado com esse complemento aqui. Posso adicionar no seu pacote?"
 
     # === ABA 3: AGENDAMENTO ===
     with tab3:
