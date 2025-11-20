@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - SIDEBAR HTML BYPASS)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - CHEVRON FIX)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -74,6 +74,12 @@ st.markdown(f"""
     /* 1. CONFIGURAÇÃO DE TEMA BASE */
     .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
     .block-container {{ padding-top: 1.5rem !important; }}
+
+    /* FIX NO CHEVRON (SETA) DA SIDEBAR */
+    .stApp > header button svg {{
+        fill: {TEXT_COLOR} !important; /* Garante que a seta seja branca/clara */
+        opacity: 0.8;
+    }}
     
     /* 2. TITULO PRINCIPAL */
     h1 {{
@@ -88,19 +94,19 @@ st.markdown(f"""
         text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
-    /* 3. CLASSE PARA OS TÍTULOS INJETADOS NA SIDEBAR (FORÇA VISUAL) */
+    /* 3. ESTILO DOS TÍTULOS LATERAIS (AGORA FORÇADO VIA HTML BYPASS) */
     .neon-sidebar-header {{ 
         font-size: 1.5em; 
         font-weight: 800; 
-        color: {ACCENT_COLOR} !important; /* FORÇANDO COR NEON */
+        color: {ACCENT_COLOR} !important;
         letter-spacing: 0.1em;
-        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; /* FORÇANDO GLOW */
+        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important;
         margin-top: 15px;
         margin-bottom: 5px;
         font-family: 'Montserrat', sans-serif;
     }}
     
-    /* 4. RESET GERAL PARA LABELS E CAPTIONS NA SIDEBAR (GARANTE QUE FIQUEM CLAROS) */
+    /* 4. RESET GERAL PARA LABELS E CAPTIONS NA SIDEBAR */
     .stSidebar label, .stSidebar p, .stSidebar div[data-testid^="stTextContainer"] {{
         color: {TEXT_COLOR} !important; 
         font-weight: 400;
@@ -195,9 +201,8 @@ st.markdown(f"""
 
 st.divider()
 
-# --- SIDEBAR (CONFIGURAÇÕES GERAIS - AGORA COM HTML INJETADO) ---
+# --- SIDEBAR (CONFIGURAÇÕES GERAIS - HTML INJETADO) ---
 with st.sidebar:
-    # SUBSTITUÍ st.header() por st.markdown() com a classe customizada
     st.markdown('<h3 class="neon-sidebar-header">Configurar Pix</h3>', unsafe_allow_html=True)
     st.caption("Dados obrigatórios para o código funcionar.")
     meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email")
@@ -205,7 +210,6 @@ with st.sidebar:
     minha_cidade = st.text_input("Sua Cidade", value="Sao Paulo")
     
     st.divider()
-    # SUBSTITUÍ st.header() por st.markdown() com a classe customizada
     st.markdown('<h3 class="neon-sidebar-header">Personalização</h3>', unsafe_allow_html=True)
     tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
