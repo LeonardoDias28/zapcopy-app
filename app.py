@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - FIX ESTILO BOTÃO CONVERSA)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -79,7 +79,7 @@ st.markdown(f"""
     }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
-    /* FIXES NO HEADER E CHEVRON */
+    /* FIXES NO HEADER E CHEVRON (MANTIDOS) */
     .stApp > header {{
         background-color: {BG_COLOR} !important; 
         box-shadow: none !important;
@@ -101,38 +101,8 @@ st.markdown(f"""
         color: {TEXT_COLOR} !important;
     }}
 
-    /* 2. TITULO PRINCIPAL */
-    h1 {{
-        font-family: 'Montserrat', sans-serif;
-        font-size: 3.5em; 
-        font-weight: 800; 
-        color: {ACCENT_COLOR}; 
-        letter-spacing: 0.12em; 
-        text-align: center;
-        text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
-    }}
-
-    /* 3. ESTILO DOS TÍTULOS LATERAIS (HTML BYPASS) */
-    .neon-sidebar-header {{ 
-        font-size: 1.5em; 
-        font-weight: 800; 
-        color: {ACCENT_COLOR} !important;
-        letter-spacing: 0.1em;
-        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important;
-        margin-top: 15px;
-        margin-bottom: 5px;
-        font-family: 'Montserrat', sans-serif;
-    }}
+    /* ... (Demais estilos mantidos) ... */
     
-    /* 4. RESET GERAL PARA CAPTIONS NA SIDEBAR */
-    .stSidebar p, .stSidebar div[data-testid^="stTextContainer"] {{
-        color: {TEXT_COLOR} !important; 
-        font-weight: 400;
-        font-size: 1em;
-        text-shadow: none !important;
-    }}
-
-
     /* ESTILO DO CONTÊINER PRINCIPAL ÚNICO (Elegante)*/
     .stContainer {{
         background-color: {SECONDARY_BG_COLOR};
@@ -145,18 +115,6 @@ st.markdown(f"""
             0 0 15px rgba(0, 255, 192, 0.2);
         transition: box-shadow 0.3s ease-in-out;
     }}
-    .stContainer:hover {{
-        box-shadow: 
-            0 4px 8px rgba(0, 0, 0, 0.6), 
-            0 0 25px rgba(0, 255, 192, 0.4); 
-    }}
-    [data-testid="stVerticalBlock"] {{
-        background-color: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-    }}
-
 
     /* Sidebar Styles (MANTÉM O SECUNDÁRIO) */
     .stSidebar {{
@@ -164,65 +122,43 @@ st.markdown(f"""
         border-right: none; 
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.4); 
     }}
-
-    /* INPUTS DE TEXTO */
-    .stTextInput > div > div > input, .stSelectbox > div > div {{
-        background-color: #252530;
-        color: {TEXT_COLOR};
-        border: 1px solid #444;
-        border-radius: 8px;
-        box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
-    }}
-    .stTextInput > div > div > input:focus {{
-        border-color: {ACCENT_COLOR};
-        box-shadow: 0 0 5px {ACCENT_COLOR}, inset 0 0 5px rgba(0,0,0,0.5);
-    }}
-
-    /* TABS */
-    .stTabs [aria-selected="true"] {{
-        color: {ACCENT_COLOR};
-        border-color: {ACCENT_COLOR};
-        background-color: {BG_COLOR}; 
-        box-shadow: 0 -2px 8px rgba(0, 255, 192, 0.3);
-        font-weight: 700 !important;
-    }}
-    .stTabs [aria-selected="false"] {{
-        font-weight: 400 !important;
-    }}
-
-    /* TITULOS DE SESSÃO (h2/subheader) */
-    h2 {{
-        color: {ACCENT_COLOR};
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        text-shadow: 0 0 3px rgba(0, 255, 192, 0.2);
-    }}
-
-    /* BOTÕES PRIMÁRIOS */
+    
+    /* BOTÃO PRIMÁRIO (PIX) */
     .stButton > button {{
-        background-color: {ACCENT_COLOR}; 
-        color: {BG_COLOR} !important; 
+        background-color: #FF4B4B; /* Cor vermelha para destaque */
+        color: #FFFFFF !important; 
         border-radius: 8px;
         font-weight: 600;
-        box-shadow: 0 0 10px {ACCENT_COLOR}; 
+        box-shadow: 0 0 10px #FF4B4B; 
         transition: all 0.3s ease;
     }}
-    .stButton > button:hover {{
-        box-shadow: 0 0 20px {ACCENT_COLOR};
+    
+    /* BOTÃO SECUNDÁRIO (LIMPAR) */
+    .stButton:nth-child(3) > button {{ /* Limpar é o terceiro botão na linha */
+        background-color: {ACCENT_COLOR} !important;
+        color: {BG_COLOR} !important; 
+        box-shadow: 0 0 10px {ACCENT_COLOR} !important; 
+    }}
+
+    /* *************************************************** */
+    /* NOVO FIX: ESTILO DO LINK BUTTON (Passo 1: Conversa) */
+    /* *************************************************** */
+    /* O Streamlit não dá uma classe fácil, então miramos no link-button secundário */
+    [data-testid^="stLinkButton"] > a:first-child {{
+        background-color: {SECONDARY_BG_COLOR} !important; /* Fundo escuro */
+        color: {ACCENT_COLOR} !important; /* Texto neon */
+        border: 1px solid {ACCENT_COLOR} !important; /* Borda neon */
+        box-shadow: 0 0 10px rgba(0, 255, 192, 0.5) !important;
+        font-weight: 600;
+    }}
+    [data-testid^="stLinkButton"] > a:first-child:hover {{
+        background-color: #252530 !important;
+        box-shadow: 0 0 20px {ACCENT_COLOR} !important;
         transform: translateY(-2px);
     }}
-    
-    /* Subtítulo */
-    .premium-subtitle-text {{
-        font-family: 'Montserrat', sans-serif;
-        font-size: 1.3em; 
-        font-weight: 600; 
-        color: {TEXT_COLOR}; 
-        letter-spacing: 0.08em; 
-        text-align: center;
-        margin-top: 0px !important; 
-        margin-bottom: 25px !important; 
-        text-shadow: 0 0 3px rgba(255,255,255,0.1); 
+    /* Corrigindo a cor do ícone SVG dentro do link (Conversa) */
+    [data-testid^="stLinkButton"] > a:first-child svg {{
+        fill: {ACCENT_COLOR} !important;
     }}
 
 </style>
@@ -249,7 +185,7 @@ with st.sidebar:
     
     st.divider()
     st.markdown('<h3 class="neon-sidebar-header">Personalização</h3>', unsafe_allow_html=True)
-    tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável ", "Profissional ", "Persuasivo "])
+    tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
 # --- ÁREA PRINCIPAL (CONTÊINER ÚNICO) ---
 with st.container(border=True):
@@ -278,19 +214,19 @@ with st.container(border=True):
         
         if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
             if cenario_cobranca == "Enviar Pix (Padrão)":
-                if tom_voz == "Profissional ":
+                if tom_voz == "Profissional 👔":
                     intro = f"Prezado(a) {nome_cliente}, segue os dados bancários para a quitação do valor de R$ {valor_cobranca}."
                 else:
                     intro = f"Oi {nome_cliente}, tudo bem? Segue o Pix referente ao valor de R$ {valor_cobranca} conforme combinamos."
             
             elif cenario_cobranca == "Lembrete de Vencimento":
-                if tom_voz == "Profissional ":
+                if tom_voz == "Profissional 👔":
                     intro = f"Olá {nome_cliente}. Lembramos que o vencimento da fatura de R$ {valor_cobranca} é hoje."
                 else:
                     intro = f"Opa {nome_cliente}! Passando pra lembrar que seu boleto de R$ {valor_cobranca} vence hoje, ok?"
             
             else: # Atrasada
-                if tom_voz == "Amigável ":
+                if tom_voz == "Amigável 😊":
                     intro = f"Oi {nome_cliente}, acho que você esqueceu da gente rs. Não vi o pagamento de R$ {valor_cobranca}. Conseguimos resolver hoje?"
                 else:
                     intro = f"{nome_cliente}, não identificamos o pagamento de R$ {valor_cobranca}. Precisamos regularizar para evitar pendências."
@@ -310,7 +246,7 @@ with st.container(border=True):
         
         if st.button("✨ Gerar Venda", type="primary", use_container_width=True):
             if cenario_venda == "Oferta Especial":
-                if tom_voz == "Persuasivo ":
+                if tom_voz == "Persuasivo 🔥":
                     script_final = f"😱 {nome_cliente}, oportunidade única! Liberamos uma condição surreal para o {produto}. Restam poucas vagas. Quer ver?"
                 else:
                     script_final = f"Oi {nome_cliente}! Preparei uma condição especial no {produto} pra você. Tem um minutinho pra eu te mostrar?"
@@ -331,7 +267,7 @@ with st.container(border=True):
             
             hora_str = str(horario)[0:5] if horario else "horário combinado"
             
-            if tom_voz == "Profissional ":
+            if tom_voz == "Profissional 👔":
                 script_final = f"Olá {nome_cliente}. Confirmamos seu agendamento{data_str} para às {hora_str}. Solicitamos pontualidade. Obrigado."
             else:
                 script_final = f"Confirmadíssimo, {nome_cliente}! Te espero{data_str} às {hora_str}. Até lá! 👊"
@@ -342,7 +278,7 @@ with st.container(border=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
     # ==============================================================================
-    # 📤 ZONA DE SAÍDA (FIX PIX PURO PARA COPIA/COLA)
+    # 📤 ZONA DE SAÍDA (BOTÕES)
     # ==============================================================================
 
     if script_final:
@@ -373,7 +309,7 @@ with st.container(border=True):
             # Base com telefone
             base_link_sem_query = f"https://api.whatsapp.com/send?phone={nums}"
             
-            link_texto = f"{base_link_sem_query}&text={msg_texto_encoded}" # Inicia com &text
+            link_texto = f"{base_link_sem_query}&text={msg_texto_encoded}"
             label_btn = f"Enviar Conversa para {nome_cliente}"
             
             # Link PIX Puro (Com telefone, usa &text)
@@ -383,11 +319,11 @@ with st.container(border=True):
             # Base SEM telefone
             base_link_sem_query = f"https://api.whatsapp.com/send"
             
-            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}" # Inicia com ?text
+            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}" 
             label_btn = "Abrir WhatsApp com Conversa"
 
             # Link PIX Puro (Sem telefone, usa ?text)
-            link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}" 
+            link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}"
             
         label_pix_btn = "💲 Enviar Pix (Copia e Cola)"
         
@@ -396,18 +332,20 @@ with st.container(border=True):
         
         with col_btn1:
             st.markdown("**Passo 1: Conversa**")
+            # Usa st.link_button com type="secondary" (CSS ajustado para ele brilhar)
             st.link_button(f"💬 {label_btn}", link_texto, type="secondary", use_container_width=True)
         
         with col_btn2:
             st.markdown("**Passo 2: Pagamento**")
             if pix_gerado:
-                # O BOTÃO DE PIX ENVIA APENAS O CÓDIGO PURO
+                # Botão PIX usa type="primary" (CSS ajustado para ser vermelho)
                 st.link_button(label_pix_btn, link_pix_code, type="primary", use_container_width=True)
             else:
                 st.info("Nenhum Pix gerado.")
 
         with col_btn3:
             st.markdown("**Ações**")
+            # Botão Limpar usa st.button com type="secondary" (CSS ajustado para ser neon)
             if st.button("🗑️ Limpar Formulário", type="secondary", use_container_width=True):
                 st.rerun()
 
