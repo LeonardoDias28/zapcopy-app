@@ -88,10 +88,8 @@ st.markdown(f"""
         text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
-    /* 3. ESTILO DOS TÍTULOS LATERAIS (FORÇADO COM SELETOR AGRESSIVO) */
-    /* Este seletor mira o wrapper de texto dentro da sidebar para garantir a cor e o glow */
-    [data-testid="stSidebar"] [data-testid^="stTextContainer"] h3, 
-    [data-testid="stSidebar"] [data-testid^="stTextContainer"] h4 {{
+    /* 3. ESTILO DOS TÍTULOS LATERAIS (FOCO APENAS EM H3/H4) */
+    .stSidebar h3, .stSidebar h4 {{ 
         font-size: 1.5em; 
         font-weight: 800; 
         color: {ACCENT_COLOR} !important; /* FORÇANDO COR NEON */
@@ -100,16 +98,17 @@ st.markdown(f"""
         margin-top: 15px;
         margin-bottom: 5px;
     }}
-    /* Corrigindo st.header que às vezes é p-tag em alguns navegadores */
-    [data-testid="stSidebar"] [data-testid^="stText"] p {{
-        font-size: 1.5em; 
-        font-weight: 800; 
-        color: {ACCENT_COLOR} !important; 
-        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; 
-        letter-spacing: 0.1em;
+    
+    /* 4. RESET GERAL PARA LABELS E CAPTIONS NA SIDEBAR (EVITA QUE FIQUEM NEON GIGANTE) */
+    .stSidebar label, .stSidebar p, .stSidebar div[data-testid^="stTextContainer"] {{
+        color: {TEXT_COLOR} !important; /* Garante que o texto de input/legenda seja branco e legível */
+        font-weight: 400;
+        font-size: 1em;
+        text-shadow: none !important;
     }}
 
-    /* 4. ESTILO GERAL DOS CONTAINERS, INPUTS E BOTÕES */
+
+    /* 5. ESTILO GERAL DOS CONTAINERS, INPUTS E BOTÕES */
     .stContainer, [data-testid="stVerticalBlock"] {{
         background-color: {SECONDARY_BG_COLOR};
         border: 1px solid #333344;
@@ -125,7 +124,6 @@ st.markdown(f"""
         border-right: 1px solid #333344;
         box-shadow: 0 0 10px rgba(0, 255, 192, 0.05);
     }}
-    .stSidebar label {{ color: {TEXT_COLOR}; }}
 
     /* INPUTS DE TEXTO */
     .stTextInput > div > div > input, .stSelectbox > div > div {{
