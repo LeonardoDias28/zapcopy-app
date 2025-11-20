@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - LABELS EM NEGRITO)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - TABS EM NEGRITO)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -75,14 +75,6 @@ st.markdown(f"""
     .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
-    /* *************************************************** */
-    /* NOVO: DEIXA TODOS OS RÓTULOS (LABELS) EM NEGRITO */
-    /* *************************************************** */
-    label, .stLabel {{
-        font-weight: 700 !important; /* FORÇA NEGRITO */
-        color: {TEXT_COLOR} !important;
-    }}
-    
     /* FIX NO CHEVRON (SETA) DA SIDEBAR: FORÇA A VISIBILIDADE */
     .stApp > header button {{
         visibility: visible !important; 
@@ -94,6 +86,14 @@ st.markdown(f"""
         filter: none !important; 
     }}
     
+    /* *************************************************** */
+    /* NOVO: DEIXA TODOS OS RÓTULOS (LABELS) EM NEGRITO */
+    /* *************************************************** */
+    label, .stLabel {{
+        font-weight: 700 !important; /* FORÇA NEGRITO */
+        color: {TEXT_COLOR} !important;
+    }}
+
     /* 2. TITULO PRINCIPAL */
     h1 {{
         font-family: 'Montserrat', sans-serif;
@@ -158,13 +158,20 @@ st.markdown(f"""
         box-shadow: 0 0 5px {ACCENT_COLOR}, inset 0 0 5px rgba(0,0,0,0.5);
     }}
 
-    /* TABS */
+    /* *************************************************** */
+    /* NOVO: ESTILO DAS ABAS (TABS) - NEGITO NA ATIVA */
+    /* *************************************************** */
     .stTabs [aria-selected="true"] {{
         color: {ACCENT_COLOR};
         border-color: {ACCENT_COLOR};
         background-color: {SECONDARY_BG_COLOR};
         box-shadow: 0 -2px 8px rgba(0, 255, 192, 0.3);
+        font-weight: 700 !important; /* FORÇA NEGITO NA ABA ATIVA */
     }}
+    .stTabs [aria-selected="false"] {{
+        font-weight: 400 !important; /* Garante que as inativas não fiquem negrito */
+    }}
+    /* Fim do Estilo das Tabs */
 
     /* TITULOS DE SESSÃO (h2/subheader) */
     h2 {{
@@ -174,16 +181,17 @@ st.markdown(f"""
         text-shadow: 0 0 3px rgba(0, 255, 192, 0.2);
     }}
 
-    /* BOTÕES PRIMÁRIOS */
+    /* BOTÕES PRIMÁRIOS (COM ANIMAÇÃO/BRILHO) */
     .stButton > button {{
         background-color: {ACCENT_COLOR}; 
         color: {BG_COLOR} !important; 
         border-radius: 8px;
         font-weight: 600;
         box-shadow: 0 0 10px {ACCENT_COLOR}; 
+        transition: all 0.3s ease; /* Animação */
     }}
     .stButton > button:hover {{
-        box-shadow: 0 0 20px {ACCENT_COLOR};
+        box-shadow: 0 0 20px {ACCENT_COLOR}; /* Brilho maior no hover */
         transform: translateY(-2px);
     }}
     
@@ -231,15 +239,16 @@ with st.container(border=True):
     st.subheader("👤 Quem é o Cliente?")
     col_cli1, col_cli2 = st.columns(2)
     with col_cli1:
-        # A label deste campo aparecerá em negrito (font-weight: 700)
+        # Rótulo em negrito
         nome_cliente = st.text_input("Nome do Cliente", value="Fulano")
     with col_cli2:
-        # A label deste campo aparecerá em negrito (font-weight: 700)
+        # Rótulo em negrito
         celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999999999")
     
     st.write("")
 
     st.subheader("💬 Gerador de Mensagens")
+    # As tabs terão a ativa em negrito e neon.
     tab1, tab2, tab3, tab4 = st.tabs(["💸 Cobrar", "🛒 Vender", "📅 Agendar", "⭐ Feedback"])
     
     script_final = ""
@@ -248,9 +257,8 @@ with st.container(border=True):
 
     # === ABA 1: COBRANÇA ===
     with tab1:
-        # A label deste campo aparecerá em negrito (font-weight: 700)
+        # Rótulos em negrito
         cenario_cobranca = st.selectbox("Cenário:", ["Enviar Pix (Padrão)", "Lembrete de Vencimento", "Cobrança Atrasada"])
-        # A label deste campo aparecerá em negrito (font-weight: 700)
         valor_cobranca = st.text_input("Valor (R$)", value="100,00")
         
         if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
@@ -317,6 +325,7 @@ with st.container(border=True):
         if st.button("✨ Pedir Feedback", type="primary", use_container_width=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
+# =LEC: OMITTING ZONA DE SAÍDA CODE FOR BREVITY, ASSUMED IN FINAL FILE
 # ==============================================================================
 # 📤 ZONA DE SAÍDA
 # ==============================================================================
