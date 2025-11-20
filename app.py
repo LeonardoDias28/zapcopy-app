@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - TABS EM NEGRITO)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - ELIMINANDO FAIXA BRANCA)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -75,6 +75,13 @@ st.markdown(f"""
     .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
+    /* *************************************************** */
+    /* NOVO: ELIMINA A FAIXA BRANCA DO TOPO (HEADER) */
+    /* *************************************************** */
+    .stApp > header {{
+        background-color: {BG_COLOR}; 
+    }}
+    
     /* FIX NO CHEVRON (SETA) DA SIDEBAR: FORÇA A VISIBILIDADE */
     .stApp > header button {{
         visibility: visible !important; 
@@ -87,7 +94,7 @@ st.markdown(f"""
     }}
     
     /* *************************************************** */
-    /* NOVO: DEIXA TODOS OS RÓTULOS (LABELS) EM NEGRITO */
+    /* NEGITO E ESTILIZAÇÃO */
     /* *************************************************** */
     label, .stLabel {{
         font-weight: 700 !important; /* FORÇA NEGRITO */
@@ -158,20 +165,17 @@ st.markdown(f"""
         box-shadow: 0 0 5px {ACCENT_COLOR}, inset 0 0 5px rgba(0,0,0,0.5);
     }}
 
-    /* *************************************************** */
-    /* NOVO: ESTILO DAS ABAS (TABS) - NEGITO NA ATIVA */
-    /* *************************************************** */
+    /* TABS */
     .stTabs [aria-selected="true"] {{
         color: {ACCENT_COLOR};
         border-color: {ACCENT_COLOR};
         background-color: {SECONDARY_BG_COLOR};
         box-shadow: 0 -2px 8px rgba(0, 255, 192, 0.3);
-        font-weight: 700 !important; /* FORÇA NEGITO NA ABA ATIVA */
+        font-weight: 700 !important;
     }}
     .stTabs [aria-selected="false"] {{
-        font-weight: 400 !important; /* Garante que as inativas não fiquem negrito */
+        font-weight: 400 !important;
     }}
-    /* Fim do Estilo das Tabs */
 
     /* TITULOS DE SESSÃO (h2/subheader) */
     h2 {{
@@ -181,17 +185,17 @@ st.markdown(f"""
         text-shadow: 0 0 3px rgba(0, 255, 192, 0.2);
     }}
 
-    /* BOTÕES PRIMÁRIOS (COM ANIMAÇÃO/BRILHO) */
+    /* BOTÕES PRIMÁRIOS */
     .stButton > button {{
         background-color: {ACCENT_COLOR}; 
         color: {BG_COLOR} !important; 
         border-radius: 8px;
         font-weight: 600;
         box-shadow: 0 0 10px {ACCENT_COLOR}; 
-        transition: all 0.3s ease; /* Animação */
+        transition: all 0.3s ease;
     }}
     .stButton > button:hover {{
-        box-shadow: 0 0 20px {ACCENT_COLOR}; /* Brilho maior no hover */
+        box-shadow: 0 0 20px {ACCENT_COLOR};
         transform: translateY(-2px);
     }}
     
@@ -318,14 +322,13 @@ with st.container(border=True):
             if tom_voz == "Profissional 👔":
                 script_final = f"Olá {nome_cliente}. Confirmamos seu agendamento{data_str} para às {hora_str}. Solicitamos pontualidade. Obrigado."
             else:
-                script_final = f"Confirmadíssimo, {nome_cliente}! Te espero{data_str} às {hora_str}. Até lá! 👊"
+                script_final = f"Confirmadíssimo, {nome_cliente}! Te espero{data_str} às {horário_str}. Até lá! 👊"
 
     # === ABA 4: FEEDBACK ===
     with tab4:
         if st.button("✨ Pedir Feedback", type="primary", use_container_width=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
-# =LEC: OMITTING ZONA DE SAÍDA CODE FOR BREVITY, ASSUMED IN FINAL FILE
 # ==============================================================================
 # 📤 ZONA DE SAÍDA
 # ==============================================================================
