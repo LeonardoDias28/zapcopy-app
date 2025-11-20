@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - FIX LINK WHATSAPP FINAL)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - FIX PIX COPIA/COLA)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -342,7 +342,7 @@ with st.container(border=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
     # ==============================================================================
-    # 📤 ZONA DE SAÍDA (FIX WHATSAPP ENCODING E URL)
+    # 📤 ZONA DE SAÍDA (FIX PIX PURO PARA COPIA/COLA)
     # ==============================================================================
 
     if script_final:
@@ -356,10 +356,15 @@ with st.container(border=True):
         link_texto = ""
         link_pix_code = ""
         
-        # FIX 1: Processa o script de conversa para codificação robusta (usa %0A para quebras de linha)
+        # --- ENCODING ---
+        # Conversa: Usa script_final_clean (Mensagem + Aviso do Pix)
         script_final_clean = script_final.replace('\n', '%0A') 
         msg_texto_encoded = quote(script_final_clean)
         
+        # PIX Puro: Usa SOMENTE o pix_gerado
+        pix_payload_clean = pix_gerado.replace('\n', '%0A')
+        msg_pix_encoded = quote(pix_payload_clean)
+
         
         # --- Lógica de Construção da URL ---
         if celular_cliente:
@@ -370,28 +375,21 @@ with st.container(border=True):
             
             link_texto = f"{base_link_sem_query}&text={msg_texto_encoded}" # Inicia com &text
             label_btn = f"Enviar Conversa para {nome_cliente}"
+            
+            # Link PIX Puro (Com telefone, usa &text)
+            link_pix_code = f"{base_link_sem_query}&text={msg_pix_encoded}" 
+            
         else:
             # Base SEM telefone
             base_link_sem_query = f"https://api.whatsapp.com/send"
             
-            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}" # Inicia com ?text (FIX!)
+            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}" # Inicia com ?text
             label_btn = "Abrir WhatsApp com Conversa"
 
-
-        
-        # Se PIX gerado, cria o link de envio do código PIX
-        if pix_gerado:
-             # FIX 2: Processa o payload do PIX para codificação robusta
-             pix_payload_clean = pix_gerado.replace('\n', '%0A')
-             msg_pix_encoded = quote(pix_payload_clean)
-             
-             # LINK DO PIX UTILIZANDO O MESMO BASE_LINK CORRIGIDO
-             if celular_cliente:
-                 link_pix_code = f"{base_link_sem_query}&text={msg_pix_encoded}" # Com telefone, usa &text
-             else:
-                 link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}" # Sem telefone, usa ?text (FIX!)
-
-             label_pix_btn = "💲 Enviar Pix (Copia e Cola)"
+            # Link PIX Puro (Sem telefone, usa ?text)
+            link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}" # Inicia com ?text
+            
+        label_pix_btn = "💲 Enviar Pix (Copia e Cola)"
         
         # Colunas: Conversa, Pagamento, Limpeza
         col_btn1, col_btn2, col_btn3 = st.columns(3)
@@ -403,6 +401,7 @@ with st.container(border=True):
         with col_btn2:
             st.markdown("**Passo 2: Pagamento**")
             if pix_gerado:
+                # O BOTÃO DE PIX AGORA ENVIA APENAS O CÓDIGO PURO
                 st.link_button(label_pix_btn, link_pix_code, type="primary", use_container_width=True)
             else:
                 st.info("Nenhum Pix gerado.")
@@ -425,3 +424,4 @@ with st.container(border=True):
                     st.image(qr_url, width=120)
                 with col_txt:
                     st.caption("Aponte o app do seu banco aqui para escanear o pagamento.")
+                    
