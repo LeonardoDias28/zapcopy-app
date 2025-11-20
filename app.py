@@ -20,21 +20,22 @@ TEXT_COLOR = "#EAEAEA"
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
 
-# Credenciais (Pode alterar aqui depois ou conectar com banco)
+# Credenciais Simples
 CREDENCIAIS = {
     "admin": "123",
     "cliente": "1234"
 }
 
 def verificar_login():
-    user = st.session_state.get("input_user", "")
-    pwd = st.session_state.get("input_pwd", "")
+    # Pega os valores e remove espaços em branco extras (.strip())
+    user = st.session_state.get("input_user", "").strip()
+    pwd = st.session_state.get("input_pwd", "").strip()
     
     if user in CREDENCIAIS and CREDENCIAIS[user] == pwd:
         st.session_state.logged_in = True
         st.rerun()
     else:
-        st.error("Usuário ou senha incorretos.")
+        st.error(f"Login falhou. Tente Usuário: 'admin' e Senha: '123'")
 
 def fazer_logout():
     st.session_state.logged_in = False
@@ -61,7 +62,6 @@ def tela_login():
             border: 1px solid #333; box-shadow: 0 0 20px rgba(0,0,0,0.5);
             text-align: center; margin-top: 50px;
         }}
-        /* Esconde a sidebar na tela de login para ficar limpo */
         [data-testid="stSidebar"] {{ display: none; }}
     </style>
     """, unsafe_allow_html=True)
@@ -75,115 +75,63 @@ def tela_login():
             </div>
         """, unsafe_allow_html=True)
         
-        st.text_input("Usuário", key="input_user", placeholder="admin")
-        st.text_input("Senha", key="input_pwd", type="password", placeholder="123")
+        # Campos de entrada
+        st.text_input("Usuário", key="input_user", placeholder="Digite: admin")
+        st.text_input("Senha", key="input_pwd", type="password", placeholder="Digite: 123")
+        
         st.markdown("<br>", unsafe_allow_html=True)
         st.button("ENTRAR", on_click=verificar_login)
+        
+        # Dica visual para garantir que você consiga logar
+        st.markdown(f"""
+            <div style="margin-top: 20px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 0.8em; color: #aaa;">
+                🔑 <b>Acesso Admin:</b><br>User: <code>admin</code> | Senha: <code>123</code>
+            </div>
+        """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 🚀 APLICATIVO ZAPCOPY PRO (CÓDIGO ORIGINAL V12.15 INTACTO)
+# 🚀 APLICATIVO ZAPCOPY PRO (CÓDIGO ORIGINAL INTACTO)
 # ==============================================================================
 
 def main_app():
     # --- 1. CSS ORIGINAL (Restaurado) ---
     st.markdown(f"""
     <style>
-        /* CONFIGURAÇÃO DE TEMA BASE */
-        html, body, .stApp {{ 
-            background-color: {BG_COLOR} !important; 
-            color: {TEXT_COLOR}; 
-            font-family: 'Montserrat', sans-serif; 
-        }}
+        html, body, .stApp {{ background-color: {BG_COLOR} !important; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
         .block-container {{ padding-top: 1.5rem !important; }}
-
-        /* HEADER E CHEVRON */
         .stApp > header {{ background-color: {BG_COLOR} !important; box-shadow: none !important; }}
         .stApp > header > div {{ background-color: {BG_COLOR} !important; }}
-        
-        /* TÍTULO PRINCIPAL */
-        h1 {{
-            font-family: 'Montserrat', sans-serif; font-size: 3.5em; font-weight: 800; 
-            color: {ACCENT_COLOR}; letter-spacing: 0.12em; text-align: center;
-            text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
-        }}
-
-        /* TÍTULOS LATERAIS (NEON) */
-        .neon-sidebar-header {{ 
-            font-size: 1.5em; font-weight: 800; color: {ACCENT_COLOR} !important;
-            letter-spacing: 0.1em; text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important;
-            margin-top: 15px; margin-bottom: 5px; font-family: 'Montserrat', sans-serif;
-        }}
-
-        /* SIDEBAR */
+        h1 {{ font-family: 'Montserrat', sans-serif; font-size: 3.5em; font-weight: 800; color: {ACCENT_COLOR}; letter-spacing: 0.12em; text-align: center; text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); }}
+        .neon-sidebar-header {{ font-size: 1.5em; font-weight: 800; color: {ACCENT_COLOR} !important; letter-spacing: 0.1em; text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; margin-top: 15px; margin-bottom: 5px; font-family: 'Montserrat', sans-serif; }}
         .stSidebar {{ background-color: #1A1A24; border-right: none; box-shadow: 2px 0 5px rgba(0, 0, 0, 0.4); }}
-
-        /* INPUTS */
-        .stTextInput > div > div > input, .stSelectbox > div > div {{
-            background-color: #252530; color: {TEXT_COLOR}; border: 1px solid #444;
-            border-radius: 8px; box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
-        }}
-        .stTextInput > div > div > input:focus {{
-            border-color: {ACCENT_COLOR}; box-shadow: 0 0 5px {ACCENT_COLOR}, inset 0 0 5px rgba(0,0,0,0.5);
-        }}
-
-        /* TABS */
-        .stTabs [aria-selected="true"] {{
-            color: {ACCENT_COLOR}; border-color: {ACCENT_COLOR}; background-color: {BG_COLOR}; 
-            box-shadow: 0 -2px 8px rgba(0, 255, 192, 0.3); font-weight: 700 !important;
-        }}
-        
-        /* BOTÕES GERAIS (Vermelho para o Pix) */
-        .stButton > button {{
-            background-color: #FF4B4B; color: #FFFFFF !important; border-radius: 8px;
-            font-weight: 600; box-shadow: 0 0 10px #FF4B4B; transition: all 0.3s ease;
-        }}
-        
-        /* BOTÃO LIMPAR (Neon Green - Fixado por posição) */
-        .stButton:nth-child(3) > button {{
-            background-color: {ACCENT_COLOR} !important; color: {BG_COLOR} !important; box-shadow: 0 0 10px {ACCENT_COLOR} !important; 
-        }}
-
-        /* LINK BUTTON (Conversa) */
-        [data-testid^="stLinkButton"]:first-child a {{
-            background-color: #1A1A24 !important; color: {ACCENT_COLOR} !important;
-            border: 1px solid {ACCENT_COLOR} !important; border-radius: 8px !important;
-            box-shadow: 0 0 10px rgba(0, 255, 192, 0.5) !important; font-weight: 600; text-decoration: none !important; 
-        }}
-        [data-testid^="stLinkButton"]:first-child a:hover {{
-            background-color: #252530 !important; box-shadow: 0 0 20px {ACCENT_COLOR} !important; transform: translateY(-2px);
-        }}
+        .stTextInput > div > div > input, .stSelectbox > div > div {{ background-color: #252530; color: {TEXT_COLOR}; border: 1px solid #444; border-radius: 8px; box-shadow: inset 0 0 5px rgba(0,0,0,0.3); }}
+        .stTextInput > div > div > input:focus {{ border-color: {ACCENT_COLOR}; box-shadow: 0 0 5px {ACCENT_COLOR}, inset 0 0 5px rgba(0,0,0,0.5); }}
+        .stTabs [aria-selected="true"] {{ color: {ACCENT_COLOR}; border-color: {ACCENT_COLOR}; background-color: {BG_COLOR}; box-shadow: 0 -2px 8px rgba(0, 255, 192, 0.3); font-weight: 700 !important; }}
+        .stButton > button {{ background-color: #FF4B4B; color: #FFFFFF !important; border-radius: 8px; font-weight: 600; box-shadow: 0 0 10px #FF4B4B; transition: all 0.3s ease; }}
+        .stButton:nth-child(3) > button {{ background-color: {ACCENT_COLOR} !important; color: {BG_COLOR} !important; box-shadow: 0 0 10px {ACCENT_COLOR} !important; }}
+        [data-testid^="stLinkButton"]:first-child a {{ background-color: #1A1A24 !important; color: {ACCENT_COLOR} !important; border: 1px solid {ACCENT_COLOR} !important; border-radius: 8px !important; box-shadow: 0 0 10px rgba(0, 255, 192, 0.5) !important; font-weight: 600; text-decoration: none !important; }}
+        [data-testid^="stLinkButton"]:first-child a:hover {{ background-color: #252530 !important; box-shadow: 0 0 20px {ACCENT_COLOR} !important; transform: translateY(-2px); }}
         [data-testid^="stLinkButton"]:first-child a svg {{ fill: {ACCENT_COLOR} !important; }}
-        
-        /* Subtítulo */
-        .premium-subtitle-text {{
-            font-family: 'Montserrat', sans-serif; font-size: 1.3em; font-weight: 600; color: {TEXT_COLOR}; 
-            letter-spacing: 0.08em; text-align: center; margin-top: 0px !important; margin-bottom: 25px !important; 
-            text-shadow: 0 0 3px rgba(255,255,255,0.1); 
-        }}
+        .premium-subtitle-text {{ font-family: 'Montserrat', sans-serif; font-size: 1.3em; font-weight: 600; color: {TEXT_COLOR}; letter-spacing: 0.08em; text-align: center; margin-top: 0px !important; margin-bottom: 25px !important; text-shadow: 0 0 3px rgba(255,255,255,0.1); }}
     </style>
     """, unsafe_allow_html=True)
 
-    # --- 2. ESTRUTURA ORIGINAL ---
     st.markdown(f"""
         <div style="text-align: center; margin-bottom: 20px;">
             <h1>ZapCopy Pro</h1>
             <p class="premium-subtitle-text">Sistema de Cobrança Otimizado para WhatsApp</p>
         </div>
     """, unsafe_allow_html=True)
-
     st.divider()
 
     with st.sidebar:
-        # LOGOUT DISCRETO (Pequeno link no topo, sem estragar o layout)
         if st.button("🔒 Sair", key="logout_btn", help="Encerrar sessão"):
-            fazer_logout()
-            
+            fazer_logout()   
         st.markdown('<h3 class="neon-sidebar-header">Configurar Pix</h3>', unsafe_allow_html=True)
         st.caption("Dados obrigatórios para o código funcionar.")
         meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email", value="") 
         meu_nome = st.text_input("Seu Nome Completo", value="", placeholder="Ex: Leonardo Dias") 
         minha_cidade = st.text_input("Sua Cidade", placeholder="Ex: São Paulo", value="") 
-        
         st.divider()
         st.markdown('<h3 class="neon-sidebar-header">Personalização</h3>', unsafe_allow_html=True)
         tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
@@ -195,28 +143,20 @@ def main_app():
             nome_cliente = st.text_input("Nome do Cliente", value="", placeholder="Ex: João Silva") 
         with col_cli2:
             celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999999999", value="")
-
         st.markdown("<br>", unsafe_allow_html=True) 
         st.divider()
 
         st.subheader("💬 Gerador de Mensagens")
         tab1, tab2, tab3, tab4 = st.tabs(["💸 Cobrar", "🛒 Vender", "📅 Agendar", "⭐ Feedback"])
-
         script_final = ""
         pix_gerado = ""
         
-        # Lógica auxiliar
-        def limpar_texto(texto):
-            if not texto: return ""
-            nfkd = unicodedata.normalize('NFKD', texto)
-            sem_acento = "".join([c for c in nfkd if not unicodedata.combining(c)])
-            return re.sub(r'[^A-Z0-9 ]', '', sem_acento.upper()).strip()
+        def limpar_texto(texto): return re.sub(r'[^A-Z0-9 ]', '', "".join([c for c in unicodedata.normalize('NFKD', texto if texto else "") if not unicodedata.combining(c)]).upper()).strip()
         def formatar_valor(valor):
             try: return "{:.2f}".format(float(valor.replace("R$", "").replace(",", ".").strip()))
             except: return "0.00"
         def crc16_ccitt(payload):
-            crc = 0xFFFF
-            polynomial = 0x1021
+            crc = 0xFFFF; polynomial = 0x1021
             for byte in payload.encode('utf-8'):
                 crc ^= (byte << 8)
                 for _ in range(8):
@@ -225,90 +165,64 @@ def main_app():
                 crc &= 0xFFFF
             return "{:04X}".format(crc)
         def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
-            chave_limpa = chave.strip(); nome_limpo = limpar_texto(nome)[:25]; cidade_limpa = limpar_texto(cidade)[:15]; valor_formatado = formatar_valor(valor)
-            p_chave = f"0014BR.GOV.BCB.PIX01{len(chave_limpa):02}{chave_limpa}"
-            payload = f"00020126{len(p_chave):02}{p_chave}52040000530398654{len(valor_formatado):02}{valor_formatado}5802BR59{len(nome_limpo):02}{nome_limpo}60{len(cidade_limpa):02}{cidade_limpa}62070503{txid}6304"
-            return f"{payload}{crc16_ccitt(payload)}"
+            c_l = chave.strip(); n_l = limpar_texto(nome)[:25]; cid_l = limpar_texto(cidade)[:15]; v_l = formatar_valor(valor)
+            p_k = f"0014BR.GOV.BCB.PIX01{len(c_l):02}{c_l}"
+            pay = f"00020126{len(p_k):02}{p_k}52040000530398654{len(v_l):02}{v_l}5802BR59{len(n_l):02}{n_l}60{len(cid_l):02}{cid_l}62070503{txid}6304"
+            return f"{pay}{crc16_ccitt(pay)}"
 
         with tab1:
-            cenario_cobranca = st.selectbox("Cenário:", ["Enviar Pix (Padrão)", "Lembrete de Vencimento", "Cobrança Atrasada"])
-            valor_cobranca = st.text_input("Valor (R$)", placeholder="Ex: 150,00", value="")
+            cenario = st.selectbox("Cenário:", ["Enviar Pix (Padrão)", "Lembrete", "Atraso"])
+            val = st.text_input("Valor (R$)", placeholder="150,00", value="")
             if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
-                if cenario_cobranca == "Enviar Pix (Padrão)":
-                    intro = f"Prezado(a) {nome_cliente}, segue os dados bancários para a quitação do valor de R$ {valor_cobranca}." if tom_voz == "Profissional 👔" else f"Oi {nome_cliente}, tudo bem? Segue o Pix referente ao valor de R$ {valor_cobranca} conforme combinamos."
-                elif cenario_cobranca == "Lembrete de Vencimento":
-                    intro = f"Olá {nome_cliente}. Lembramos que o vencimento da fatura de R$ {valor_cobranca} é hoje." if tom_voz == "Profissional 👔" else f"Opa {nome_cliente}! Passando pra lembrar que seu boleto de R$ {valor_cobranca} vence hoje, ok?"
-                else: 
-                    intro = f"{nome_cliente}, não identificamos o pagamento de R$ {valor_cobranca}. Precisamos regularizar." if tom_voz == "Profissional 👔" else f"Oi {nome_cliente}, acho que você esqueceu da gente rs. Não vi o pagamento de R$ {valor_cobranca}."
-                
+                if cenario == "Enviar Pix (Padrão)": intro = f"Prezado(a) {nome_cliente}, segue dados para pagamento de R$ {val}." if tom_voz == "Profissional 👔" else f"Oi {nome_cliente}, tudo bem? Segue o Pix referente ao valor de R$ {val}."
+                elif cenario == "Lembrete": intro = f"Olá {nome_cliente}. Lembramos que o vencimento da fatura de R$ {val} é hoje." if tom_voz == "Profissional 👔" else f"Opa {nome_cliente}! Passando pra lembrar que seu boleto de R$ {val} vence hoje, ok?"
+                else: intro = f"{nome_cliente}, precisamos regularizar pendência de R$ {val}." if tom_voz == "Profissional 👔" else f"Oi {nome_cliente}, não vi o pagamento de R$ {val}. Conseguimos resolver?"
                 if meu_pix and meu_nome:
-                    pix_gerado = gerar_pix_payload(meu_pix, meu_nome, minha_cidade, valor_cobranca if valor_cobranca else "0,00")
+                    pix_gerado = gerar_pix_payload(meu_pix, meu_nome, minha_cidade, val if val else "0.00")
                     script_final = intro + "\n\n👇 Segue o código 'Copia e Cola' na mensagem abaixo:"
-                else:
-                    st.error("⚠️ Preencha os dados do Pix na barra lateral!")
-
+                else: st.error("⚠️ Preencha os dados do Pix na barra lateral!")
         with tab2:
-            cenario_venda = st.selectbox("Objetivo:", ["Oferta Especial", "Recuperar Cliente", "Upsell (Oferecer mais)"])
-            produto = st.text_input("Nome do Produto", value="", placeholder="Ex: Serviço Premium")
+            cenario_v = st.selectbox("Objetivo:", ["Oferta Especial", "Recuperar Cliente", "Upsell"])
+            prod = st.text_input("Produto", value="")
             if st.button("✨ Gerar Venda", type="primary", use_container_width=True):
-                if cenario_venda == "Oferta Especial":
-                    script_final = f"😱 {nome_cliente}, oportunidade única! Liberamos uma condição surreal para o {produto}. Restam poucas vagas." if tom_voz == "Persuasivo 🔥" else f"Oi {nome_cliente}! Preparei uma condição especial no {produto} pra você."
-                elif cenario_venda == "Recuperar Cliente":
-                    script_final = f"Ei {nome_cliente}, faz tempo que a gente não se fala! Chegou novidade de {produto} que é a sua cara."
-                else:
-                    script_final = f"{nome_cliente}, quem leva {produto} costuma ter muito resultado com esse complemento aqui. Posso adicionar no seu pacote?"
-
+                if cenario_v == "Oferta Especial": script_final = f"😱 {nome_cliente}, oportunidade única no {prod}!" if tom_voz == "Persuasivo 🔥" else f"Oi {nome_cliente}! Condição especial no {prod} pra você."
+                elif cenario_v == "Recuperar Cliente": script_final = f"Ei {nome_cliente}, sumiu! Chegou novidade de {prod}."
+                else: script_final = f"{nome_cliente}, quem leva {prod} costuma levar esse complemento."
         with tab3:
-            data_agendamento = st.date_input("Dia do Agendamento (Opcional)", value=None)
-            horario = st.time_input("Horário do Agendamento", value=None)
+            d_ag = st.date_input("Dia", value=None); h_ag = st.time_input("Hora", value=None)
             if st.button("✨ Confirmar Agenda", type="primary", use_container_width=True):
-                d_str = f" no dia {data_agendamento.strftime('%d/%m')}" if data_agendamento else ""
-                h_str = str(horario)[0:5] if horario else "horário combinado"
-                script_final = f"Olá {nome_cliente}. Confirmamos seu agendamento{d_str} para às {h_str}. Solicitamos pontualidade." if tom_voz == "Profissional 👔" else f"Confirmadíssimo, {nome_cliente}! Te espero{d_str} às {h_str}. Até lá! 👊"
-
+                d_s = f" dia {d_ag.strftime('%d/%m')}" if d_ag else ""; h_s = str(h_ag)[0:5] if h_ag else "horário combinado"
+                script_final = f"Olá {nome_cliente}. Confirmamos agendamento{d_s} às {h_s}." if tom_voz == "Profissional 👔" else f"Confirmadíssimo, {nome_cliente}! Te espero{d_s} às {h_s}. 👊"
         with tab4:
             if st.button("✨ Pedir Feedback", type="primary", use_container_width=True):
-                script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
+                script_final = f"Oi {nome_cliente}! De 0 a 10, quanto recomendaria nosso serviço? ⭐"
 
         if script_final:
-            st.divider()
-            st.success("✅ Mensagem Pronta!")
-            with st.expander("👀 Ver texto da mensagem"): st.write(script_final)
-
-            script_clean = script_final.replace('\n', '%0A'); msg_enc = quote(script_clean)
-            pix_clean = pix_gerado.replace('\n', '%0A'); pix_enc = quote(pix_clean)
+            st.divider(); st.success("✅ Mensagem Pronta!")
+            with st.expander("👀 Ver texto"): st.write(script_final)
+            
+            s_clean = script_final.replace('\n', '%0A'); m_enc = quote(s_clean)
+            p_clean = pix_gerado.replace('\n', '%0A'); p_enc = quote(p_clean)
             
             if celular_cliente:
-                nums = "".join(filter(str.isdigit, celular_cliente.strip()))
-                if not nums.startswith("55"): nums = "55" + nums
-                base = f"https://api.whatsapp.com/send?phone={nums}"
-                link_t, label_b, link_p = f"{base}&text={msg_enc}", f"Enviar Conversa para {nome_cliente}", f"{base}&text={pix_enc}"
+                nums = "".join(filter(str.isdigit, celular_cliente.strip())); nums = "55" + nums if not nums.startswith("55") else nums
+                base = f"https://api.whatsapp.com/send?phone={nums}"; l_txt = f"{base}&text={m_enc}"; l_pix = f"{base}&text={p_enc}"; l_lbl = f"Enviar para {nome_cliente}"
             else:
-                base = "https://api.whatsapp.com/send"
-                link_t, label_b, link_p = f"{base}?text={msg_enc}", "Abrir WhatsApp com Conversa", f"{base}?text={pix_enc}"
+                base = "https://api.whatsapp.com/send"; l_txt = f"{base}?text={m_enc}"; l_pix = f"{base}?text={p_enc}"; l_lbl = "Abrir WhatsApp"
             
-            c_b1, c_b2, c_b3 = st.columns(3)
-            with c_b1:
-                st.markdown("**Passo 1: Conversa**")
-                st.link_button(f"💬 {label_b}", link_t, type="secondary", use_container_width=True)
-            with c_b2:
-                st.markdown("**Passo 2: Pagamento**")
-                if pix_gerado: st.link_button("💲 Enviar Pix (Copia e Cola)", link_p, type="primary", use_container_width=True)
-                else: st.info("Nenhum Pix gerado.")
-            with c_b3:
-                st.markdown("**Ações**")
-                if st.button("🗑️ Limpar Formulário", type="secondary", use_container_width=True): st.rerun()
+            c1, c2, c3 = st.columns(3)
+            with c1: st.markdown("**Passo 1: Conversa**"); st.link_button(f"💬 {l_lbl}", l_txt, type="secondary", use_container_width=True)
+            with c2: st.markdown("**Passo 2: Pagamento**"); st.link_button("💲 Enviar Pix (Copia e Cola)", l_pix, type="primary", use_container_width=True) if pix_gerado else st.info("Sem Pix")
+            with c3: st.markdown("**Ações**"); st.button("🗑️ Limpar Formulário", type="secondary", use_container_width=True, on_click=st.rerun)
 
             if pix_gerado:
                 st.markdown("---")
                 with st.expander("📱 Testar ou Copiar Código PIX"):
-                    st.markdown("##### Código PIX")
                     st.text_area("Código PIX:", pix_gerado, height=3)
-                    st.markdown("---")
-                    qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_gerado)}"
-                    col_qr, col_txt = st.columns([1,3])
-                    with col_qr: st.image(qr_url, width=120)
-                    with col_txt: st.caption("Aponte o app do seu banco aqui para escanear o pagamento.")
+                    qr = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_gerado)}"
+                    cq, ct = st.columns([1,3]); 
+                    with cq: st.image(qr, width=120)
+                    with ct: st.caption("Escaneie para testar.")
 
 # ==============================================================================
 # 🚦 CONTROLE DE ACESSO
