@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - LAYOUT DE FLUXO ÚNICO)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - CONTÊINER PRINCIPAL ÚNICO)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -103,25 +103,6 @@ st.markdown(f"""
     }}
     
     /* *************************************************** */
-    /* REMOVENDO CAIXAS: CONTÊINERES VÃO PARA O FUNDO */
-    /* *************************************************** */
-    .stContainer, [data-testid="stVerticalBlock"] {{
-        background-color: transparent !important; /* Fundo transparente */
-        border: none !important; /* Sem bordas */
-        box-shadow: none !important; /* Sem sombras/brilho */
-        border-radius: 0; /* Sem cantos arredondados */
-        padding: 0 30px 0 30px; /* Mantém o espaçamento lateral */
-        margin-bottom: 25px;
-    }}
-
-    /* Sidebar Styles (MANTÉM O SECUNDÁRIO) */
-    .stSidebar {{
-        background-color: {SECONDARY_BG_COLOR};
-        border-right: none; 
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.4); 
-    }}
-    
-    /* *************************************************** */
     /* NEGITO E ESTILIZAÇÃO */
     /* *************************************************** */
     label, .stLabel {{
@@ -163,6 +144,43 @@ st.markdown(f"""
     }}
 
 
+    /* *************************************************** */
+    /* NOVO: ESTILO DO CONTÊINER PRINCIPAL ÚNICO (Elegante)*/
+    /* *************************************************** */
+    /* O Streamlit aplica esta classe ao usar st.container(border=True) */
+    .stContainer {{
+        background-color: {SECONDARY_BG_COLOR};
+        border: none !important; /* Remove a borda sólida */
+        border-radius: 18px; /* Cantos mais suaves */
+        padding: 30px; 
+        margin-bottom: 25px;
+        /* Novo efeito de sombra/brilho mais sutil e elegante */
+        box-shadow: 
+            0 2px 5px rgba(0, 0, 0, 0.4), /* Sombra para profundidade */
+            0 0 15px rgba(0, 255, 192, 0.2); /* Brilho neon sutil */
+        transition: box-shadow 0.3s ease-in-out; /* Animação suave para o brilho */
+    }}
+    .stContainer:hover {{
+        box-shadow: 
+            0 4px 8px rgba(0, 0, 0, 0.6), /* Sombra mais pronunciada no hover */
+            0 0 25px rgba(0, 255, 192, 0.4); /* Brilho neon mais intenso no hover */
+    }}
+    /* Para os sub-blocos (VerticalBlock), removeremos a caixa para evitar aninhamento */
+    [data-testid="stVerticalBlock"] {{
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }}
+
+
+    /* Sidebar Styles (MANTÉM O SECUNDÁRIO) */
+    .stSidebar {{
+        background-color: {SECONDARY_BG_COLOR};
+        border-right: none; 
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.4); 
+    }}
+
     /* INPUTS DE TEXTO */
     .stTextInput > div > div > input, .stSelectbox > div > div {{
         background-color: #252530;
@@ -180,7 +198,7 @@ st.markdown(f"""
     .stTabs [aria-selected="true"] {{
         color: {ACCENT_COLOR};
         border-color: {ACCENT_COLOR};
-        background-color: {BG_COLOR}; /* Fundo da tab igual ao fundo do app */
+        background-color: {BG_COLOR}; 
         box-shadow: 0 -2px 8px rgba(0, 255, 192, 0.3);
         font-weight: 700 !important;
     }}
@@ -249,154 +267,156 @@ with st.sidebar:
     st.markdown('<h3 class="neon-sidebar-header">Personalização</h3>', unsafe_allow_html=True)
     tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
-# --- ÁREA PRINCIPAL (FLUXO CONTÍNUO) ---
-# NOTE: Removed the 'with st.container(border=True):' wrapping all content
+# --- ÁREA PRINCIPAL (CONTÊINER ÚNICO) ---
 
-st.subheader("👤 Quem é o Cliente?")
-col_cli1, col_cli2 = st.columns(2)
-with col_cli1:
-    nome_cliente = st.text_input("Nome do Cliente", value="Fulano")
-with col_cli2:
-    celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999999999")
+# TODO o conteúdo principal é envolvido por um único st.container
+with st.container(border=True):
 
-st.markdown("<br>", unsafe_allow_html=True) # Espaçamento para limpar a área
-st.divider()
+    st.subheader("👤 Quem é o Cliente?")
+    col_cli1, col_cli2 = st.columns(2)
+    with col_cli1:
+        nome_cliente = st.text_input("Nome do Cliente", value="Fulano")
+    with col_cli2:
+        celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999999999")
 
-st.subheader("💬 Gerador de Mensagens")
-tab1, tab2, tab3, tab4 = st.tabs(["💸 Cobrar", "🛒 Vender", "📅 Agendar", "⭐ Feedback"])
-
-script_final = ""
-pix_gerado = ""
-msg_pix_aviso = ""
-
-# === ABA 1: COBRANÇA ===
-with tab1:
-    cenario_cobranca = st.selectbox("Cenário:", ["Enviar Pix (Padrão)", "Lembrete de Vencimento", "Cobrança Atrasada"])
-    valor_cobranca = st.text_input("Valor (R$)", value="100,00")
-    
-    if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
-        if cenario_cobranca == "Enviar Pix (Padrão)":
-            if tom_voz == "Profissional 👔":
-                intro = f"Prezado(a) {nome_cliente}, segue os dados bancários para a quitação do valor de R$ {valor_cobranca}."
-            else:
-                intro = f"Oi {nome_cliente}, tudo bem? Segue o Pix referente ao valor de R$ {valor_cobranca} conforme combinamos."
-        
-        elif cenario_cobranca == "Lembrete de Vencimento":
-            if tom_voz == "Profissional 👔":
-                intro = f"Olá {nome_cliente}. Lembramos que o vencimento da fatura de R$ {valor_cobranca} é hoje."
-            else:
-                intro = f"Opa {nome_cliente}! Passando pra lembrar que seu boleto de R$ {valor_cobranca} vence hoje, ok?"
-        
-        else: # Atrasada
-            if tom_voz == "Amigável 😊":
-                intro = f"Oi {nome_cliente}, acho que você esqueceu da gente rs. Não vi o pagamento de R$ {valor_cobranca}. Conseguimos resolver hoje?"
-            else:
-                intro = f"{nome_cliente}, não identificamos o pagamento de R$ {valor_cobranca}. Precisamos regularizar para evitar pendências."
-
-        if meu_pix and meu_nome:
-            pix_gerado = gerar_pix_payload(meu_pix, meu_nome, minha_cidade, valor_cobranca)
-            msg_pix_aviso = "\n\n👇 Segue o código 'Copia e Cola' na mensagem abaixo:"
-            script_final = intro + msg_pix_aviso
-        else:
-            st.error("⚠️ Preencha os dados do Pix na barra lateral!")
-
-# === ABA 2: VENDAS ===
-with tab2:
-    cenario_venda = st.selectbox("Objetivo:", ["Oferta Especial", "Recuperar Cliente", "Upsell (Oferecer mais)"])
-    produto = st.text_input("Nome do Produto", value="Serviço Premium")
-    
-    if st.button("✨ Gerar Venda", type="primary", use_container_width=True):
-        if cenario_venda == "Oferta Especial":
-            if tom_voz == "Persuasivo 🔥":
-                script_final = f"😱 {nome_cliente}, oportunidade única! Liberamos uma condição surreal para o {produto}. Restam poucas vagas. Quer ver?"
-            else:
-                script_final = f"Oi {nome_cliente}! Preparei uma condição especial no {produto} pra você. Tem um minutinho pra eu te mostrar?"
-        elif cenario_venda == "Recuperar Cliente":
-            script_final = f"Ei {nome_cliente}, faz tempo que a gente não se fala! Chegou novidade de {produto} que é a sua cara."
-        else:
-            script_final = f"{nome_cliente}, quem leva {produto} costuma ter muito resultado com esse complemento aqui. Posso adicionar no seu pacote?"
-
-# === ABA 3: AGENDAMENTO ===
-with tab3:
-    data_agendamento = st.date_input("Dia do Agendamento (Opcional)", value=None)
-    horario = st.time_input("Horário do Agendamento", value=None)
-    
-    if st.button("✨ Confirmar Agenda", type="primary", use_container_width=True):
-        data_str = ""
-        if data_agendamento:
-            data_str = f" no dia {data_agendamento.strftime('%d/%m')}"
-        
-        hora_str = str(horario)[0:5] if horario else "horário combinado"
-        
-        if tom_voz == "Profissional 👔":
-            script_final = f"Olá {nome_cliente}. Confirmamos seu agendamento{data_str} para às {hora_str}. Solicitamos pontualidade. Obrigado."
-        else:
-            script_final = f"Confirmadíssimo, {nome_cliente}! Te espero{data_str} às {hora_str}. Até lá! 👊"
-
-# === ABA 4: FEEDBACK ===
-with tab4:
-    if st.button("✨ Pedir Feedback", type="primary", use_container_width=True):
-        script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
-
-# ==============================================================================
-# 📤 ZONA DE SAÍDA
-# ==============================================================================
-
-if script_final:
+    st.markdown("<br>", unsafe_allow_html=True) 
     st.divider()
-    st.success("✅ Mensagem Pronta!")
-    
-    with st.expander("👀 Ver texto da mensagem"):
-        st.write(script_final)
 
-    link_texto = ""
-    link_pix_code = ""
-    
-    msg_texto_encoded = quote(script_final)
-    
-    if celular_cliente:
-        nums = "".join(filter(str.isdigit, celular_cliente))
-        if not nums.startswith("55"): nums = "55" + nums
-        
-        base_url = f"https://api.whatsapp.com/send?phone={nums}"
-        link_texto = f"{base_url}&text={msg_texto_encoded}"
-        
-        if pix_gerado:
-             msg_pix_encoded = quote(pix_gerado)
-             link_pix_code = f"{base_url}&text={msg_pix_encoded}"
-             
-        label_btn = f"Enviar para {nome_cliente}"
-    
-    else:
-        base_url = "https://api.whatsapp.com/send"
-        link_texto = f"{base_url}?text={msg_texto_encoded}"
-        
-        if pix_gerado:
-             msg_pix_encoded = quote(pix_gerado)
-             link_pix_code = f"{base_url}?text={msg_pix_encoded}"
-             
-        label_btn = "Abrir WhatsApp"
+    st.subheader("💬 Gerador de Mensagens")
+    tab1, tab2, tab3, tab4 = st.tabs(["💸 Cobrar", "🛒 Vender", "📅 Agendar", "⭐ Feedback"])
 
-    col_btn1, col_btn2 = st.columns(2)
-    
-    with col_btn1:
-        st.markdown("**Passo 1: A Conversa**")
-        st.link_button(f"💬 {label_btn}", link_texto, type="secondary", use_container_width=True)
-    
-    with col_btn2:
-        if pix_gerado:
-            st.markdown("**Passo 2: O Pagamento**")
-            st.link_button("💲 Enviar Pix (Copia e Cola)", link_pix_code, type="primary", use_container_width=True)
+    script_final = ""
+    pix_gerado = ""
+    msg_pix_aviso = ""
+
+    # === ABA 1: COBRANÇA ===
+    with tab1:
+        cenario_cobranca = st.selectbox("Cenário:", ["Enviar Pix (Padrão)", "Lembrete de Vencimento", "Cobrança Atrasada"])
+        valor_cobranca = st.text_input("Valor (R$)", value="100,00")
+        
+        if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
+            if cenario_cobranca == "Enviar Pix (Padrão)":
+                if tom_voz == "Profissional 👔":
+                    intro = f"Prezado(a) {nome_cliente}, segue os dados bancários para a quitação do valor de R$ {valor_cobranca}."
+                else:
+                    intro = f"Oi {nome_cliente}, tudo bem? Segue o Pix referente ao valor de R$ {valor_cobranca} conforme combinamos."
+            
+            elif cenario_cobranca == "Lembrete de Vencimento":
+                if tom_voz == "Profissional 👔":
+                    intro = f"Olá {nome_cliente}. Lembramos que o vencimento da fatura de R$ {valor_cobranca} é hoje."
+                else:
+                    intro = f"Opa {nome_cliente}! Passando pra lembrar que seu boleto de R$ {valor_cobranca} vence hoje, ok?"
+            
+            else: # Atrasada
+                if tom_voz == "Amigável 😊":
+                    intro = f"Oi {nome_cliente}, acho que você esqueceu da gente rs. Não vi o pagamento de R$ {valor_cobranca}. Conseguimos resolver hoje?"
+                else:
+                    intro = f"{nome_cliente}, não identificamos o pagamento de R$ {valor_cobranca}. Precisamos regularizar para evitar pendências."
+
+            if meu_pix and meu_nome:
+                pix_gerado = gerar_pix_payload(meu_pix, meu_nome, minha_cidade, valor_cobranca)
+                msg_pix_aviso = "\n\n👇 Segue o código 'Copia e Cola' na mensagem abaixo:"
+                script_final = intro + msg_pix_aviso
+            else:
+                st.error("⚠️ Preencha os dados do Pix na barra lateral!")
+
+    # === ABA 2: VENDAS ===
+    with tab2:
+        cenario_venda = st.selectbox("Objetivo:", ["Oferta Especial", "Recuperar Cliente", "Upsell (Oferecer mais)"])
+        produto = st.text_input("Nome do Produto", value="Serviço Premium")
+        
+        if st.button("✨ Gerar Venda", type="primary", use_container_width=True):
+            if cenario_venda == "Oferta Especial":
+                if tom_voz == "Persuasivo 🔥":
+                    script_final = f"😱 {nome_cliente}, oportunidade única! Liberamos uma condição surreal para o {produto}. Restam poucas vagas. Quer ver?"
+                else:
+                    script_final = f"Oi {nome_cliente}! Preparei uma condição especial no {produto} pra você. Tem um minutinho pra eu te mostrar?"
+            elif cenario_venda == "Recuperar Cliente":
+                script_final = f"Ei {nome_cliente}, faz tempo que a gente não se fala! Chegou novidade de {produto} que é a sua cara."
+            else:
+                script_final = f"{nome_cliente}, quem leva {produto} costuma ter muito resultado com esse complemento aqui. Posso adicionar no seu pacote?"
+
+    # === ABA 3: AGENDAMENTO ===
+    with tab3:
+        data_agendamento = st.date_input("Dia do Agendamento (Opcional)", value=None)
+        horario = st.time_input("Horário do Agendamento", value=None)
+        
+        if st.button("✨ Confirmar Agenda", type="primary", use_container_width=True):
+            data_str = ""
+            if data_agendamento:
+                data_str = f" no dia {data_agendamento.strftime('%d/%m')}"
+            
+            hora_str = str(horario)[0:5] if horario else "horário combinado"
+            
+            if tom_voz == "Profissional 👔":
+                script_final = f"Olá {nome_cliente}. Confirmamos seu agendamento{data_str} para às {hora_str}. Solicitamos pontualidade. Obrigado."
+            else:
+                script_final = f"Confirmadíssimo, {nome_cliente}! Te espero{data_str} às {hora_str}. Até lá! 👊"
+
+    # === ABA 4: FEEDBACK ===
+    with tab4:
+        if st.button("✨ Pedir Feedback", type="primary", use_container_width=True):
+            script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
+
+    # ==============================================================================
+    # 📤 ZONA DE SAÍDA
+    # ==============================================================================
+
+    if script_final:
+        st.divider()
+        st.success("✅ Mensagem Pronta!")
+        
+        with st.expander("👀 Ver texto da mensagem"):
+            st.write(script_final)
+
+        link_texto = ""
+        link_pix_code = ""
+        
+        msg_texto_encoded = quote(script_final)
+        
+        if celular_cliente:
+            nums = "".join(filter(str.isdigit, celular_cliente))
+            if not nums.startswith("55"): nums = "55" + nums
+            
+            base_url = f"https://api.whatsapp.com/send?phone={nums}"
+            link_texto = f"{base_url}&text={msg_texto_encoded}"
+            
+            if pix_gerado:
+                 msg_pix_encoded = quote(pix_gerado)
+                 link_pix_code = f"{base_url}&text={msg_pix_encoded}"
+                 
+            label_btn = f"Enviar para {nome_cliente}"
+        
         else:
-            st.markdown("**Passo 2: (Sem Pix)**")
-            st.info("Nenhum Pix gerado nesta mensagem.")
+            base_url = "https://api.whatsapp.com/send"
+            link_texto = f"{base_url}?text={msg_texto_encoded}"
+            
+            if pix_gerado:
+                 msg_pix_encoded = quote(pix_gerado)
+                 link_pix_code = f"{base_url}?text={msg_pix_encoded}"
+                 
+            label_btn = "Abrir WhatsApp"
 
-    if pix_gerado:
-        st.markdown("---")
-        with st.expander("📱 Testar QR Code (Para você)"):
-            qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_gerado)}"
-            col_qr, col_txt = st.columns([1,3])
-            with col_qr:
-                st.image(qr_url, width=120)
-            with col_txt:
-                st.caption("Aponte o app do seu banco aqui para testar se o valor e os dados batem.")
+        col_btn1, col_btn2 = st.columns(2)
+        
+        with col_btn1:
+            st.markdown("**Passo 1: A Conversa**")
+            st.link_button(f"💬 {label_btn}", link_texto, type="secondary", use_container_width=True)
+        
+        with col_btn2:
+            if pix_gerado:
+                st.markdown("**Passo 2: O Pagamento**")
+                st.link_button("💲 Enviar Pix (Copia e Cola)", link_pix_code, type="primary", use_container_width=True)
+            else:
+                st.markdown("**Passo 2: (Sem Pix)**")
+                st.info("Nenhum Pix gerado nesta mensagem.")
+
+        if pix_gerado:
+            st.markdown("---")
+            with st.expander("📱 Testar QR Code (Para você)"):
+                qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_gerado)}"
+                col_qr, col_txt = st.columns([1,3])
+                with col_qr:
+                    st.image(qr_url, width=120)
+                with col_txt:
+                    st.caption("Aponte o app do seu banco aqui para testar se o valor e os dados batem.")
