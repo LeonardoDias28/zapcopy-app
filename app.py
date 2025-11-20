@@ -58,23 +58,32 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (AJUSTES DE MARGEM E LAYOUT)
+# 🎨 INTERFACE (LAYOUT E MARGENS CORRIGIDOS)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
 
-# --- NOVO BLOCO DE CSS PARA AJUSTAR ESPAÇAMENTO ---
+# --- BLOCO AGRESSIVO DE CSS PARA AJUSTAR ESPAÇAMENTO ---
 st.markdown("""
 <style>
-    /* Remove padding default do Streamlit no topo e rodapé para um look mais clean */
-    .css-18nib5g { padding-top: 1rem; } /* Container principal no topo */
-    .css-1r6zf9b { padding-bottom: 0rem; } /* Container principal no rodapé */
-    
-    /* Centraliza e dá respiro à logo */
-    .logo-container { margin-bottom: 20px; margin-top: 10px; }
-    
-    /* Esconde o menu hamburger padrão (cleaner look) */
-    /* div[data-testid="stToolbar"] { display: none; } */ 
+    /* Reduz o padding interno do container principal no topo (ajuda na logo) */
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 0rem;
+    }
+    /* Remove margens extras da logo e do subtítulo para forçar a proximidade */
+    .logo-container {
+        margin-top: -10px !important; /* Puxa o topo para cima */
+        margin-bottom: 0px !important;
+    }
+    /* Remove margem padrão de H-tags e P-tags no topo do bloco de logo */
+    .logo-subtitle {
+        margin-top: 0px !important;
+        margin-bottom: 10px !important; /* Mantém um pequeno respiro */
+        color: #555;
+        font-size: 15px;
+        text-align: center;
+    }
 </style>
 """, unsafe_allow_html=True)
 # --- FIM DO NOVO BLOCO DE CSS ---
@@ -87,7 +96,7 @@ LOGO_URL = "https://raw.githubusercontent.com/LeonardoDias28/zapcopy-app/main/lo
 st.markdown(f"""
     <div class="logo-container" style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
         <img src="{LOGO_URL}" width="300"> 
-        <h5 style="text-align: center; margin-top: 5px; margin-bottom: 0px; color: #555;">Sistema de Cobrança Otimizado para WhatsApp</h5>
+        <p class="logo-subtitle">Sistema de Cobrança Otimizado para WhatsApp</p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -107,6 +116,7 @@ with st.sidebar:
 
 # --- ÁREA PRINCIPAL ---
 with st.container(border=True):
+    # O espaçamento aqui deve estar muito melhor!
     st.subheader("👤 Quem é o Cliente?")
     col_cli1, col_cli2 = st.columns(2)
     with col_cli1:
