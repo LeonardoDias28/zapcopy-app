@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - TÍTULOS LATERAIS)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - SIDEBAR FIX)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -88,19 +88,18 @@ st.markdown(f"""
         text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
-    /* 3. ESTILO DOS TÍTULOS LATERAIS (h3/h4) - NOVOS AJUSTES AQUI */
+    /* 3. ESTILO DOS TÍTULOS LATERAIS (FORÇANDO ESTILO NEON) */
     .stSidebar h3, .stSidebar h4 {{ 
-        font-size: 1.5em; /* Maior que o padrão da sidebar */
+        font-size: 1.5em; /* Aumentado */
         font-weight: 800; /* Extra Bold */
-        color: {ACCENT_COLOR}; 
+        color: {ACCENT_COLOR} !important; /* AGORA FORÇANDO */
         letter-spacing: 0.1em;
-        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5); /* Glow Forte */
+        text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important; /* AGORA FORÇANDO */
         margin-top: 15px;
         margin-bottom: 5px;
     }}
 
-
-    /* 4. ESTILO DOS CONTAINERS, INPUTS E BOTÕES */
+    /* 4. ESTILO GERAL DOS CONTAINERS, INPUTS E BOTÕES */
     .stContainer, [data-testid="stVerticalBlock"] {{
         background-color: {SECONDARY_BG_COLOR};
         border: 1px solid #333344;
@@ -190,7 +189,6 @@ st.divider()
 
 # --- SIDEBAR (CONFIGURAÇÕES GERAIS) ---
 with st.sidebar:
-    # AGORA COM ESTILO DE H1 MINUSCULO
     st.header("Configurar Pix") 
     st.caption("Dados obrigatórios para o código funcionar.")
     meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email")
@@ -198,7 +196,6 @@ with st.sidebar:
     minha_cidade = st.text_input("Sua Cidade", value="Sao Paulo")
     
     st.divider()
-    # AGORA COM ESTILO DE H1 MINUSCULO
     st.header("Personalização") 
     tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
