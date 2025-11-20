@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - FIX ESTILO BOTÃO CIRÚRGICO)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - RESTAURAÇÃO TOTAL DO BRILHO)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -101,7 +101,7 @@ st.markdown(f"""
         color: {TEXT_COLOR} !important;
     }}
 
-    /* 2. TITULO PRINCIPAL */
+    /* 2. TITULO PRINCIPAL (RESTAURADO) */
     h1 {{
         font-family: 'Montserrat', sans-serif;
         font-size: 3.5em; 
@@ -109,15 +109,17 @@ st.markdown(f"""
         color: {ACCENT_COLOR}; 
         letter-spacing: 0.12em; 
         text-align: center;
+        /* BRILHO NEON RESTAURADO */
         text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
-    /* 3. ESTILO DOS TÍTULOS LATERAIS (HTML BYPASS) */
+    /* 3. ESTILO DOS TÍTULOS LATERAIS (HTML BYPASS) - RESTAURADO! */
     .neon-sidebar-header {{ 
         font-size: 1.5em; 
         font-weight: 800; 
         color: {ACCENT_COLOR} !important;
         letter-spacing: 0.1em;
+        /* BRILHO NEON RESTAURADO */
         text-shadow: 0 0 8px {ACCENT_COLOR}, 0 0 15px rgba(0, 255, 192, 0.5) !important;
         margin-top: 15px;
         margin-bottom: 5px;
@@ -216,6 +218,8 @@ st.markdown(f"""
         border-radius: 8px !important;
         box-shadow: 0 0 10px rgba(0, 255, 192, 0.5) !important;
         font-weight: 600;
+        /* Força a cor do texto do link (que estava ficando cinza) */
+        text-decoration: none !important; 
     }}
     [data-testid^="stLinkButton"]:first-child a:hover {{
         background-color: #252530 !important;
@@ -374,6 +378,8 @@ with st.container(border=True):
         # --- ENCODING ---
         script_final_clean = script_final.replace('\n', '%0A') 
         msg_texto_encoded = quote(script_final_clean)
+        
+        # PIX Puro: Usa SOMENTE o pix_gerado
         pix_payload_clean = pix_gerado.replace('\n', '%0A')
         msg_pix_encoded = quote(pix_payload_clean)
 
@@ -392,7 +398,7 @@ with st.container(border=True):
         else:
             base_link_sem_query = f"https://api.whatsapp.com/send"
             
-            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}" 
+            link_texto = f"{base_link_sem_query}?text={msg_texto_encoded}"
             label_btn = "Abrir WhatsApp com Conversa"
 
             link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}" 
