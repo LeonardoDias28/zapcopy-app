@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - FIX PIX COPIA/COLA)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -79,7 +79,7 @@ st.markdown(f"""
     }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
-    /* FIXES NO HEADER E CHEVRON */
+    /* FIXES NO HEADER E CHEVRON (MANTIDOS) */
     .stApp > header {{
         background-color: {BG_COLOR} !important; 
         box-shadow: none !important;
@@ -387,7 +387,7 @@ with st.container(border=True):
             label_btn = "Abrir WhatsApp com Conversa"
 
             # Link PIX Puro (Sem telefone, usa ?text)
-            link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}" 
+            link_pix_code = f"{base_link_sem_query}?text={msg_pix_encoded}" # Inicia com ?text
             
         label_pix_btn = "💲 Enviar Pix (Copia e Cola)"
         
@@ -401,7 +401,7 @@ with st.container(border=True):
         with col_btn2:
             st.markdown("**Passo 2: Pagamento**")
             if pix_gerado:
-                # O BOTÃO DE PIX ENVIA APENAS O CÓDIGO PURO
+                # O BOTÃO DE PIX AGORA ENVIA APENAS O CÓDIGO PURO
                 st.link_button(label_pix_btn, link_pix_code, type="primary", use_container_width=True)
             else:
                 st.info("Nenhum Pix gerado.")
