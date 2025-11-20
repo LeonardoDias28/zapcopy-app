@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - CONTÊINER PRINCIPAL ÚNICO)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - OTIMIZAÇÃO DE INPUTS)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -80,24 +80,15 @@ st.markdown(f"""
     }}
     .block-container {{ padding-top: 1.5rem !important; }}
 
-    /* *************************************************** */
-    /* FINAL FIX: ELIMINA A FAIXA BRANCA DO TOPO (HEADER) */
-    /* *************************************************** */
-    .stApp > header {{
+    /* FIXES NO HEADER E CHEVRON (MANTIDOS) */
+    .stApp > header, .stApp > header > div {{
         background-color: {BG_COLOR} !important; 
         box-shadow: none !important;
     }}
-    .stApp > header > div {{
-        background-color: {BG_COLOR} !important; 
-    }}
-    
-    /* FIX NO CHEVRON (SETA) DA SIDEBAR: FORÇA A VISIBILIDADE */
-    .stApp > header button {{
+    .stApp > header button, .stApp > header button svg {{
         visibility: visible !important; 
-        color: {TEXT_COLOR} !important;
-    }}
-    .stApp > header button svg {{
         fill: {TEXT_COLOR} !important; 
+        color: {TEXT_COLOR} !important;
         opacity: 1 !important;
         filter: none !important; 
     }}
@@ -118,8 +109,6 @@ st.markdown(f"""
         color: {ACCENT_COLOR}; 
         letter-spacing: 0.12em; 
         text-align: center;
-        margin-top: 20px !important; 
-        margin-bottom: 5px !important;
         text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); 
     }}
 
@@ -145,27 +134,24 @@ st.markdown(f"""
 
 
     /* *************************************************** */
-    /* NOVO: ESTILO DO CONTÊINER PRINCIPAL ÚNICO (Elegante)*/
+    /* ESTILO DO CONTÊINER PRINCIPAL ÚNICO (Elegante)*/
     /* *************************************************** */
-    /* O Streamlit aplica esta classe ao usar st.container(border=True) */
     .stContainer {{
         background-color: {SECONDARY_BG_COLOR};
-        border: none !important; /* Remove a borda sólida */
-        border-radius: 18px; /* Cantos mais suaves */
+        border: none !important; 
+        border-radius: 18px; 
         padding: 30px; 
         margin-bottom: 25px;
-        /* Novo efeito de sombra/brilho mais sutil e elegante */
         box-shadow: 
-            0 2px 5px rgba(0, 0, 0, 0.4), /* Sombra para profundidade */
-            0 0 15px rgba(0, 255, 192, 0.2); /* Brilho neon sutil */
-        transition: box-shadow 0.3s ease-in-out; /* Animação suave para o brilho */
+            0 2px 5px rgba(0, 0, 0, 0.4), 
+            0 0 15px rgba(0, 255, 192, 0.2);
+        transition: box-shadow 0.3s ease-in-out;
     }}
     .stContainer:hover {{
         box-shadow: 
-            0 4px 8px rgba(0, 0, 0, 0.6), /* Sombra mais pronunciada no hover */
-            0 0 25px rgba(0, 255, 192, 0.4); /* Brilho neon mais intenso no hover */
+            0 4px 8px rgba(0, 0, 0, 0.6), 
+            0 0 25px rgba(0, 255, 192, 0.4); 
     }}
-    /* Para os sub-blocos (VerticalBlock), removeremos a caixa para evitar aninhamento */
     [data-testid="stVerticalBlock"] {{
         background-color: transparent !important;
         border: none !important;
@@ -259,9 +245,10 @@ st.divider()
 with st.sidebar:
     st.markdown('<h3 class="neon-sidebar-header">Configurar Pix</h3>', unsafe_allow_html=True)
     st.caption("Dados obrigatórios para o código funcionar.")
-    meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email")
-    meu_nome = st.text_input("Seu Nome Completo")
-    minha_cidade = st.text_input("Sua Cidade", value="Sao Paulo")
+    # REMOVENDO VALORES INICIAIS DA SIDEBAR
+    meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email", value="") # Valor removido
+    meu_nome = st.text_input("Seu Nome Completo", value="") # Valor removido
+    minha_cidade = st.text_input("Sua Cidade", placeholder="Ex: São Paulo", value="") # Valor inicial removido
     
     st.divider()
     st.markdown('<h3 class="neon-sidebar-header">Personalização</h3>', unsafe_allow_html=True)
@@ -275,9 +262,11 @@ with st.container(border=True):
     st.subheader("👤 Quem é o Cliente?")
     col_cli1, col_cli2 = st.columns(2)
     with col_cli1:
-        nome_cliente = st.text_input("Nome do Cliente", value="Fulano")
+        # Valor inicial removido
+        nome_cliente = st.text_input("Nome do Cliente", value="", placeholder="Ex: João Silva") 
     with col_cli2:
-        celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999999999")
+        # Valor inicial removido e placeholder mantido
+        celular_cliente = st.text_input("WhatsApp (Opcional)", placeholder="11999999999", value="")
 
     st.markdown("<br>", unsafe_allow_html=True) 
     st.divider()
@@ -292,7 +281,8 @@ with st.container(border=True):
     # === ABA 1: COBRANÇA ===
     with tab1:
         cenario_cobranca = st.selectbox("Cenário:", ["Enviar Pix (Padrão)", "Lembrete de Vencimento", "Cobrança Atrasada"])
-        valor_cobranca = st.text_input("Valor (R$)", value="100,00")
+        # VALOR CORRIGIDO: Agora usa placeholder para exemplo
+        valor_cobranca = st.text_input("Valor (R$)", placeholder="Ex: 150,00", value="")
         
         if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
             if cenario_cobranca == "Enviar Pix (Padrão)":
@@ -314,7 +304,9 @@ with st.container(border=True):
                     intro = f"{nome_cliente}, não identificamos o pagamento de R$ {valor_cobranca}. Precisamos regularizar para evitar pendências."
 
             if meu_pix and meu_nome:
-                pix_gerado = gerar_pix_payload(meu_pix, meu_nome, minha_cidade, valor_cobranca)
+                # O valor padrão é 0.00 se o usuário deixar o campo vazio
+                valor_para_pix = valor_cobranca if valor_cobranca else "0,00"
+                pix_gerado = gerar_pix_payload(meu_pix, meu_nome, minha_cidade, valor_para_pix)
                 msg_pix_aviso = "\n\n👇 Segue o código 'Copia e Cola' na mensagem abaixo:"
                 script_final = intro + msg_pix_aviso
             else:
@@ -323,7 +315,7 @@ with st.container(border=True):
     # === ABA 2: VENDAS ===
     with tab2:
         cenario_venda = st.selectbox("Objetivo:", ["Oferta Especial", "Recuperar Cliente", "Upsell (Oferecer mais)"])
-        produto = st.text_input("Nome do Produto", value="Serviço Premium")
+        produto = st.text_input("Nome do Produto", value="", placeholder="Ex: Serviço Premium") # Valor inicial removido
         
         if st.button("✨ Gerar Venda", type="primary", use_container_width=True):
             if cenario_venda == "Oferta Especial":
