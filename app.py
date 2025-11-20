@@ -249,7 +249,7 @@ with st.sidebar:
     
     st.divider()
     st.markdown('<h3 class="neon-sidebar-header">Personalização</h3>', unsafe_allow_html=True)
-    tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
+    tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável ", "Profissional ", "Persuasivo "])
 
 # --- ÁREA PRINCIPAL (CONTÊINER ÚNICO) ---
 with st.container(border=True):
@@ -278,19 +278,19 @@ with st.container(border=True):
         
         if st.button("✨ Gerar Cobrança", type="primary", use_container_width=True):
             if cenario_cobranca == "Enviar Pix (Padrão)":
-                if tom_voz == "Profissional 👔":
+                if tom_voz == "Profissional ":
                     intro = f"Prezado(a) {nome_cliente}, segue os dados bancários para a quitação do valor de R$ {valor_cobranca}."
                 else:
                     intro = f"Oi {nome_cliente}, tudo bem? Segue o Pix referente ao valor de R$ {valor_cobranca} conforme combinamos."
             
             elif cenario_cobranca == "Lembrete de Vencimento":
-                if tom_voz == "Profissional 👔":
+                if tom_voz == "Profissional ":
                     intro = f"Olá {nome_cliente}. Lembramos que o vencimento da fatura de R$ {valor_cobranca} é hoje."
                 else:
                     intro = f"Opa {nome_cliente}! Passando pra lembrar que seu boleto de R$ {valor_cobranca} vence hoje, ok?"
             
             else: # Atrasada
-                if tom_voz == "Amigável 😊":
+                if tom_voz == "Amigável ":
                     intro = f"Oi {nome_cliente}, acho que você esqueceu da gente rs. Não vi o pagamento de R$ {valor_cobranca}. Conseguimos resolver hoje?"
                 else:
                     intro = f"{nome_cliente}, não identificamos o pagamento de R$ {valor_cobranca}. Precisamos regularizar para evitar pendências."
@@ -310,7 +310,7 @@ with st.container(border=True):
         
         if st.button("✨ Gerar Venda", type="primary", use_container_width=True):
             if cenario_venda == "Oferta Especial":
-                if tom_voz == "Persuasivo 🔥":
+                if tom_voz == "Persuasivo ":
                     script_final = f"😱 {nome_cliente}, oportunidade única! Liberamos uma condição surreal para o {produto}. Restam poucas vagas. Quer ver?"
                 else:
                     script_final = f"Oi {nome_cliente}! Preparei uma condição especial no {produto} pra você. Tem um minutinho pra eu te mostrar?"
@@ -331,7 +331,7 @@ with st.container(border=True):
             
             hora_str = str(horario)[0:5] if horario else "horário combinado"
             
-            if tom_voz == "Profissional 👔":
+            if tom_voz == "Profissional ":
                 script_final = f"Olá {nome_cliente}. Confirmamos seu agendamento{data_str} para às {hora_str}. Solicitamos pontualidade. Obrigado."
             else:
                 script_final = f"Confirmadíssimo, {nome_cliente}! Te espero{data_str} às {hora_str}. Até lá! 👊"
