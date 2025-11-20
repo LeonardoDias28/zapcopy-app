@@ -200,7 +200,6 @@ st.markdown(f"""
     }}
     
     /* BOTÃO LIMPAR SECUNDÁRIO (Ações) - NEON GREEN */
-    /* Miramos especificamente no botão de Limpar (st.button) */
     .stButton:nth-child(3) > button {{
         background-color: {ACCENT_COLOR} !important;
         color: {BG_COLOR} !important; 
@@ -210,12 +209,12 @@ st.markdown(f"""
     /* *************************************************** */
     /* FIX ESTILO BOTÃO CONVERSA (Passo 1) - USANDO CSS CIRÚRGICO */
     /* *************************************************** */
-    /* ESTE É O BLOCO MAIS IMPORTANTE PARA VOCÊ */
+    /* Aplica o estilo Neon Green no st.link_button para combinar com o Limpar */
     [data-testid^="stLinkButton"]:first-child a {{
-        background-color: {SECONDARY_BG_COLOR} !important; /* Fundo escuro */
-        color: {ACCENT_COLOR} !important; /* Texto neon */
-        border: 1px solid {ACCENT_COLOR} !important; /* Borda neon */
-        border-radius: 8px !important; /* Arredondamento igual aos outros */
+        background-color: {SECONDARY_BG_COLOR} !important;
+        color: {ACCENT_COLOR} !important;
+        border: 1px solid {ACCENT_COLOR} !important;
+        border-radius: 8px !important;
         box-shadow: 0 0 10px rgba(0, 255, 192, 0.5) !important;
         font-weight: 600;
         text-decoration: none !important; 
@@ -259,7 +258,7 @@ st.divider()
 
 # --- SIDEBAR (CONFIGURAÇÕES GERAIS) ---
 with st.sidebar:
-    # A classe neon-sidebar-header agora deve estar funcionando perfeitamente
+    # Cabeçalhos com a classe neon-sidebar-header
     st.markdown('<h3 class="neon-sidebar-header">Configurar Pix</h3>', unsafe_allow_html=True)
     st.caption("Dados obrigatórios para o código funcionar.")
     meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email", value="") 
