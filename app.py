@@ -2,10 +2,10 @@ import streamlit as st
 from urllib.parse import quote
 import unicodedata
 import re
-from datetime import date # Importação para lidar com datas
+from datetime import date 
 
 # ==============================================================================
-# 🔒 ZONA INTOCÁVEL (LÓGICA DO PIX E LIMPEZA) - IDÊNTICO AO ANTERIOR
+# 🔒 ZONA INTOCÁVEL (LÓGICA DO PIX E LIMPEZA)
 # ==============================================================================
 
 def limpar_texto(texto):
@@ -58,13 +58,22 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE
+# 🎨 INTERFACE (COM LOGO INTEGRADA)
 # ==============================================================================
 
-st.set_page_config(page_title="ZapCopy Pro", page_icon="🚀", layout="centered")
+st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
 
-st.title("🚀 ZapCopy Pro")
-st.markdown("##### Automação de Vendas e Cobrança com Pix")
+# URL DA SUA LOGO HOSPEDADA NO GITHUB (COM O NOVO NOME)
+LOGO_URL = "https://raw.githubusercontent.com/LeonardoDias28/zapcopy-app/main/logo-zapcopy-pro.png"
+
+# Substituindo o st.title por HTML para exibir a logo
+st.markdown(f"""
+    <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <img src="{LOGO_URL}" width="150">
+    </div>
+    <h5 style="text-align: center; margin-top: 5px;">Sistema de Cobrança Otimizado para WhatsApp</h5>
+""", unsafe_allow_html=True)
+
 st.divider()
 
 # --- SIDEBAR (CONFIGURAÇÕES GERAIS) ---
@@ -146,14 +155,13 @@ with st.container(border=True):
 
     # === ABA 3: AGENDAMENTO ===
     with tab3:
-        # AQUI FOI ADICIONADO O CAMPO DE DATA
         data_agendamento = st.date_input("Dia do Agendamento (Opcional)", value=None)
         horario = st.time_input("Horário do Agendamento", value=None)
         
         if st.button("✨ Confirmar Agenda", type="primary", use_container_width=True):
             data_str = ""
             if data_agendamento:
-                data_str = f" no dia {data_agendamento.strftime('%d/%m')}" # Formata para DD/MM
+                data_str = f" no dia {data_agendamento.strftime('%d/%m')}"
             
             hora_str = str(horario)[0:5] if horario else "horário combinado"
             
