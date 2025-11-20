@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (COM LOGO INTEGRADA)
+# 🎨 INTERFACE (LOGOTIPO AMPLIFICADO)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -66,10 +66,10 @@ st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered"
 # URL DA SUA LOGO HOSPEDADA NO GITHUB (COM O NOVO NOME)
 LOGO_URL = "https://raw.githubusercontent.com/LeonardoDias28/zapcopy-app/main/logo-zapcopy-pro.png"
 
-# Substituindo o st.title por HTML para exibir a logo
+# Substituindo o st.title por HTML para exibir a logo com WIDTH=300
 st.markdown(f"""
     <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-        <img src="{LOGO_URL}" width="150">
+        <img src="{LOGO_URL}" width="300"> 
     </div>
     <h5 style="text-align: center; margin-top: 5px;">Sistema de Cobrança Otimizado para WhatsApp</h5>
 """, unsafe_allow_html=True)
