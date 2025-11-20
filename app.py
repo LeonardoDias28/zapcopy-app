@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - REFINADO)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -66,73 +66,163 @@ st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered"
 # --- DEFINIÇÃO DE CORES NEON (Cyber Green) ---
 ACCENT_COLOR = "#00FFC0" # Verde Neon
 BG_COLOR = "#101018" # Fundo Escuro Suave
+SECONDARY_BG_COLOR = "#1A1A24" # Fundo para containers e sidebar
 TEXT_COLOR = "#EAEAEA" # Texto Claro
 
 st.markdown(f"""
 <style>
     /* 1. CONFIGURAÇÃO DE TEMA BASE (Fundo, Texto e Fontes) */
-    .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; }}
+    .stApp {{ background-color: {BG_COLOR}; color: {TEXT_COLOR}; font-family: 'Montserrat', sans-serif; }}
     .block-container {{ padding-top: 1.5rem !important; }}
     
-    /* 2. LOGO E CABEÇALHO CENTRALIZADOS E AMPLIADOS */
-    .logo-container {{
-        margin-top: -10px !important;
-        margin-bottom: 30px !important;
-        /* Estilo da Sombra para o Bloco */
-        border-radius: 10px;
-        padding: 10px;
-    }}
-    .premium-subtitle {{
+    /* 2. TITULO PRINCIPAL (ZapCopy Pro - como um h1/h2 customizado) */
+    h1 {{
         font-family: 'Montserrat', sans-serif;
-        font-size: 1.5em; /* SIGNIFICATIVAMENTE MAIOR */
-        font-weight: 700; 
+        font-size: 3.5em; /* Tamanho grande para destaque */
+        font-weight: 800; /* Extra Bold */
         color: {ACCENT_COLOR}; /* Cor Neon */
-        letter-spacing: 0.1em; /* Maior espaçamento */
+        letter-spacing: 0.12em; /* Maior espaçamento */
         text-align: center;
-        margin-top: 15px !important; 
-        /* Efeito de Brilho Sutil */
-        text-shadow: 0 0 5px {ACCENT_COLOR}, 0 0 10px rgba(0, 255, 192, 0.5); 
-    }}
-    
-    /* 3. ESTILO DOS CONTAINERS, INPUTS E BOTÕES */
-    .stContainer, [data-testid="stVerticalBlock"] {{
-        background-color: #1A1A24; /* Um pouco mais claro que o BG para profundidade */
-        border: 1px solid #333344;
-        border-radius: 12px; /* Cantos Arredondados */
-        padding: 30px; /* Mais padding para elegância */
-        margin-bottom: 25px; /* Mais espaço entre as sessões */
-    }}
-    .stContainer {{
-        box-shadow: 0 0 10px rgba(0, 255, 192, 0.15); /* Glow Suave */
+        margin-top: 20px !important; 
+        margin-bottom: 5px !important;
+        text-shadow: 0 0 10px {ACCENT_COLOR}, 0 0 20px rgba(0, 255, 192, 0.5); /* Glow mais forte */
     }}
 
-    /* 4. BOTÕES PRIMÁRIOS (Cor Neon) */
+    /* Subtítulo "Sistema de Cobrança Otimizado para WhatsApp" */
+    .stMarkdown p:has(.premium-subtitle-text) {{
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.3em; 
+        font-weight: 600; 
+        color: {TEXT_COLOR}; 
+        letter-spacing: 0.08em; 
+        text-align: center;
+        margin-top: 0px !important; 
+        margin-bottom: 25px !important; 
+        text-shadow: 0 0 3px rgba(255,255,255,0.1); 
+    }}
+
+    /* 3. ESTILO DOS CONTAINERS, INPUTS E BOTÕES */
+    .stContainer, [data-testid="stVerticalBlock"] {{
+        background-color: {SECONDARY_BG_COLOR}; 
+        border: 1px solid #333344;
+        border-radius: 12px; 
+        padding: 30px; 
+        margin-bottom: 25px; 
+        box-shadow: 0 0 10px rgba(0, 255, 192, 0.15); 
+    }}
+
+    /* SIDEBAR */
+    .stSidebar {{
+        background-color: {SECONDARY_BG_COLOR};
+        border-right: 1px solid #333344;
+        box-shadow: 0 0 10px rgba(0, 255, 192, 0.05);
+    }}
+    .stSidebar .st-emotion-cache-1ujif6j {{ /* Títulos da Sidebar */
+        color: {ACCENT_COLOR};
+        text-shadow: 0 0 5px rgba(0, 255, 192, 0.3);
+    }}
+    .stSidebar label {{ color: {TEXT_COLOR}; }} /* Labels dos inputs */
+
+    /* INPUTS DE TEXTO */
+    .stTextInput > div > div > input {{
+        background-color: #252530;
+        color: {TEXT_COLOR};
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+    }}
+    .stTextInput > div > div > input:focus {{
+        border-color: {ACCENT_COLOR};
+        box-shadow: 0 0 5px {ACCENT_COLOR}, inset 0 0 5px rgba(0,0,0,0.5);
+    }}
+
+    /* SELECIONAR CAIXAS (SELECTBOX) */
+    .stSelectbox > div > div {{
+        background-color: #252530;
+        color: {TEXT_COLOR};
+        border: 1px solid #444;
+        border-radius: 8px;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+    }}
+    .stSelectbox > div > div:focus {{
+        border-color: {ACCENT_COLOR};
+        box-shadow: 0 0 5px {ACCENT_COLOR};
+    }}
+
+    /* TABS */
+    .stTabs [data-baseweb="tab-list"] button {{
+        color: {TEXT_COLOR};
+        background-color: #1A1A24;
+        border-radius: 8px 8px 0 0;
+        border: 1px solid #333344;
+        border-bottom: none;
+        margin-right: 5px;
+        padding: 10px 15px;
+        box-shadow: none;
+    }}
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {{
+        color: {ACCENT_COLOR};
+        border-color: {ACCENT_COLOR};
+        background-color: {SECONDARY_BG_COLOR};
+        box-shadow: 0 -2px 8px rgba(0, 255, 192, 0.3);
+    }}
+
+    /* TITULOS DE SESSÃO (h2/subheader) */
+    h2 {{
+        color: {ACCENT_COLOR};
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-shadow: 0 0 3px rgba(0, 255, 192, 0.2);
+    }}
+
+    /* BOTÕES */
     .stButton > button {{
         background-color: {ACCENT_COLOR}; 
-        color: #101018 !important; /* Texto escuro no botão claro */
+        color: {BG_COLOR} !important; 
         border: none;
         border-radius: 8px;
-        box-shadow: 0 0 8px {ACCENT_COLOR}; /* Efeito Glow/Brilho */
+        padding: 10px 20px;
+        font-weight: 600;
+        box-shadow: 0 0 10px {ACCENT_COLOR}; 
         transition: all 0.3s ease;
     }}
     .stButton > button:hover {{
         background-color: #00FFD0;
-        box-shadow: 0 0 15px {ACCENT_COLOR};
-        transform: scale(1.02);
+        box-shadow: 0 0 20px {ACCENT_COLOR};
+        transform: translateY(-2px);
     }}
+    
+    /* Outros elementos */
+    .stDivider {{ border-top: 1px solid {ACCENT_COLOR}; opacity: 0.3; margin: 30px 0; }}
+    .stSuccess {{ background-color: rgba(0,255,192,0.1); border-color: {ACCENT_COLOR}; color: {TEXT_COLOR}; }}
+    .stInfo {{ background-color: rgba(123,104,238,0.1); border-color: #7B68EE; color: {TEXT_COLOR}; }}
+    .st-emotion-cache-1rs60qq {{ /* st.expander header */
+        background-color: #252530;
+        border-radius: 8px;
+        border: 1px solid #333344;
+    }}
+    .st-emotion-cache-1rs60qq p {{ color: {TEXT_COLOR}; }} /* st.expander text */
+
+    /* Tooltip styling */
+    .stTooltip {{
+        background-color: #252530;
+        color: {TEXT_COLOR};
+        border: 1px solid {ACCENT_COLOR};
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 255, 192, 0.2);
+    }}
+
 </style>
 """, unsafe_allow_html=True)
-# --- FIM DO BLOCO DE CSS NEON ---
+# --- FIM DO BLOCO DE CSS NEON REFINADO ---
 
 
-# URL DA SUA LOGO HOSPEDADA NO GITHUB (IDÊNTICO)
-LOGO_URL = "https://raw.githubusercontent.com/LeonardoDias28/zapcopy-app/main/logo-zapcopy-pro.png"
-
-# Substituindo o st.title por HTML para exibir a logo (Ampliada para 420px)
+# Substituindo a logo e o st.title por um cabeçalho coeso
 st.markdown(f"""
-    <div class="logo-container">
-        <img src="{LOGO_URL}" width="420"> 
-        <p class="premium-subtitle">Sistema de Cobrança Otimizado para WhatsApp</p>
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h1>ZapCopy Pro</h1>
+        <p class="premium-subtitle-text">Sistema de Cobrança Otimizado para WhatsApp</p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -151,7 +241,6 @@ with st.sidebar:
     tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
 # --- ÁREA PRINCIPAL ---
-# O layout e a funcionalidade aqui são mantidos intactos, mas o estilo é totalmente novo
 with st.container(border=True):
     st.subheader("👤 Quem é o Cliente?")
     col_cli1, col_cli2 = st.columns(2)
@@ -263,7 +352,7 @@ if script_final:
         
         if pix_gerado:
              msg_pix_encoded = quote(pix_gerado)
-             link_pix_code = f"{base_url}&text={msg_pix_encoded}"
+             link_pix_code = f"{base_url}?text={msg_pix_encoded}"
              
         label_btn = f"Enviar para {nome_cliente}"
     
