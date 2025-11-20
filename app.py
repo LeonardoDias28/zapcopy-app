@@ -58,20 +58,37 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (LOGOTIPO AMPLIFICADO)
+# 🎨 INTERFACE (AJUSTES DE MARGEM E LAYOUT)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
 
-# URL DA SUA LOGO HOSPEDADA NO GITHUB (COM O NOVO NOME)
+# --- NOVO BLOCO DE CSS PARA AJUSTAR ESPAÇAMENTO ---
+st.markdown("""
+<style>
+    /* Remove padding default do Streamlit no topo e rodapé para um look mais clean */
+    .css-18nib5g { padding-top: 1rem; } /* Container principal no topo */
+    .css-1r6zf9b { padding-bottom: 0rem; } /* Container principal no rodapé */
+    
+    /* Centraliza e dá respiro à logo */
+    .logo-container { margin-bottom: 20px; margin-top: 10px; }
+    
+    /* Esconde o menu hamburger padrão (cleaner look) */
+    /* div[data-testid="stToolbar"] { display: none; } */ 
+</style>
+""", unsafe_allow_html=True)
+# --- FIM DO NOVO BLOCO DE CSS ---
+
+
+# URL DA SUA LOGO HOSPEDADA NO GITHUB
 LOGO_URL = "https://raw.githubusercontent.com/LeonardoDias28/zapcopy-app/main/logo-zapcopy-pro.png"
 
-# Substituindo o st.title por HTML para exibir a logo com WIDTH=300
+# Substituindo o st.title por HTML para exibir a logo
 st.markdown(f"""
-    <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+    <div class="logo-container" style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
         <img src="{LOGO_URL}" width="300"> 
+        <h5 style="text-align: center; margin-top: 5px; margin-bottom: 0px; color: #555;">Sistema de Cobrança Otimizado para WhatsApp</h5>
     </div>
-    <h5 style="text-align: center; margin-top: 5px;">Sistema de Cobrança Otimizado para WhatsApp</h5>
 """, unsafe_allow_html=True)
 
 st.divider()
