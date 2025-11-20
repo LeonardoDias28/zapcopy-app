@@ -58,7 +58,7 @@ def gerar_pix_payload(chave, nome, cidade, valor, txid="***"):
     return f"{payload}{crc}"
 
 # ==============================================================================
-# 🎨 INTERFACE (DARK NEON MINIMALISTA - ADICIONANDO BOTÃO LIMPAR)
+# 🎨 INTERFACE (DARK NEON MINIMALISTA - CORREÇÃO PIX COPIA/COLA)
 # ==============================================================================
 
 st.set_page_config(page_title="ZapCopy Pro", page_icon="💸", layout="centered")
@@ -243,7 +243,6 @@ st.divider()
 with st.sidebar:
     st.markdown('<h3 class="neon-sidebar-header">Configurar Pix</h3>', unsafe_allow_html=True)
     st.caption("Dados obrigatórios para o código funcionar.")
-    # Placeholders para limpeza
     meu_pix = st.text_input("Sua Chave Pix", placeholder="CPF, Celular ou Email", value="") 
     meu_nome = st.text_input("Seu Nome Completo", value="", placeholder="Ex: Leonardo Dias") 
     minha_cidade = st.text_input("Sua Cidade", placeholder="Ex: São Paulo", value="") 
@@ -253,8 +252,6 @@ with st.sidebar:
     tom_voz = st.selectbox("Tom de Voz da Mensagem:", ["Amigável 😊", "Profissional 👔", "Persuasivo 🔥"])
 
 # --- ÁREA PRINCIPAL (CONTÊINER ÚNICO) ---
-
-# TODO o conteúdo principal é envolvido por um único st.container
 with st.container(border=True):
 
     st.subheader("👤 Quem é o Cliente?")
@@ -345,13 +342,14 @@ with st.container(border=True):
             script_final = f"Oi {nome_cliente}! Foi um prazer te atender. De 0 a 10, quanto você recomendaria nosso serviço? Sua opinião ajuda muito! ⭐"
 
     # ==============================================================================
-    # 📤 ZONA DE SAÍDA (AGORA COM BOTÃO DE LIMPEZA)
+    # 📤 ZONA DE SAÍDA (BOTÃO PIX RESTAURADO PARA WHATSAPP)
     # ==============================================================================
 
     if script_final:
         st.divider()
         st.success("✅ Mensagem Pronta!")
         
+        # 1. Visualizar e Copiar Script da Conversa
         with st.expander("👀 Ver texto da mensagem"):
             st.write(script_final)
 
@@ -363,53 +361,53 @@ with st.container(border=True):
         if celular_cliente:
             nums = "".join(filter(str.isdigit, celular_cliente))
             if not nums.startswith("55"): nums = "55" + nums
-            
             base_url = f"https://api.whatsapp.com/send?phone={nums}"
-            link_texto = f"{base_url}&text={msg_texto_encoded}"
-            
-            if pix_gerado:
-                 msg_pix_encoded = quote(pix_gerado)
-                 link_pix_code = f"{base_url}?text={msg_pix_encoded}"
-                 
-            label_btn = f"Enviar para {nome_cliente}"
-        
+            label_btn = f"Enviar Conversa para {nome_cliente}"
         else:
             base_url = "https://api.whatsapp.com/send"
-            link_texto = f"{base_url}?text={msg_texto_encoded}"
-            
-            if pix_gerado:
-                 msg_pix_encoded = quote(pix_gerado)
-                 link_pix_code = f"{base_url}?text={msg_pix_encoded}"
-                 
-            label_btn = "Abrir WhatsApp"
+            label_btn = "Abrir WhatsApp com Conversa"
 
-        # TRÊS COLUNAS: Conversa, Pagamento, Limpeza
+        link_texto = f"{base_url}?text={msg_texto_encoded}"
+        
+        # Se PIX gerado, cria o link de envio do código PIX
+        if pix_gerado:
+             msg_pix_encoded = quote(pix_gerado)
+             # ESTE É O LINK DO PIX QUE VOCÊ QUER QUE ABRA O WHATSAPP
+             link_pix_code = f"{base_url}?text={msg_pix_encoded}"
+             label_pix_btn = "💲 Enviar Pix (Copia e Cola)"
+        
+        # Colunas: Conversa, Pagamento, Limpeza
+        # Uso 3 colunas, mas a segunda pode ser Info se não houver PIX
         col_btn1, col_btn2, col_btn3 = st.columns(3)
         
         with col_btn1:
-            st.markdown("**Passo 1: A Conversa**")
+            st.markdown("**Passo 1: Conversa**")
             st.link_button(f"💬 {label_btn}", link_texto, type="secondary", use_container_width=True)
         
         with col_btn2:
+            st.markdown("**Passo 2: Pagamento**")
             if pix_gerado:
-                st.markdown("**Passo 2: O Pagamento**")
-                st.link_button("💲 Enviar Pix (Copia e Cola)", link_pix_code, type="primary", use_container_width=True)
+                # BOTÃO PIX RESTAURADO PARA ENVIAR VIA WHATSAPP
+                st.link_button(label_pix_btn, link_pix_code, type="primary", use_container_width=True)
             else:
-                st.markdown("**Passo 2: (Sem Pix)**")
-                st.info("Nenhum Pix gerado nesta mensagem.")
+                st.info("Nenhum Pix gerado.")
 
         with col_btn3:
             st.markdown("**Ações**")
-            # BOTÃO DE LIMPEZA QUE REINICIA O APP
             if st.button("🗑️ Limpar Formulário", type="secondary", use_container_width=True):
                 st.rerun()
 
         if pix_gerado:
+            # QR Code é mantido para quem precisa escanear/copiar para o banco
             st.markdown("---")
-            with st.expander("📱 Testar QR Code (Para você)"):
+            with st.expander("📱 Testar ou Copiar Código PIX"):
+                st.markdown("##### Código PIX (Para copiar e colar no app do banco)")
+                st.text_area("Código PIX:", pix_gerado, height=3, key='pix_payload_output', help="Clique no código para copiar para a área de transferência.")
+                
+                st.markdown("---")
                 qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={quote(pix_gerado)}"
                 col_qr, col_txt = st.columns([1,3])
                 with col_qr:
                     st.image(qr_url, width=120)
                 with col_txt:
-                    st.caption("Aponte o app do seu banco aqui para testar se o valor e os dados batem.")
+                    st.caption("Aponte o app do seu banco aqui para escanear o pagamento.")
